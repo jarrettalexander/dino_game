@@ -18,8 +18,18 @@ public class SettingsActivity extends Activity {
 		startActivity(intent);
 	}
 	
+	public void viewPlayer(View v) {
+		Intent intent = new Intent(SettingsActivity.this, PlayerActivity.class);
+		startActivity(intent);
+	}
+	
 	public void viewAccount(View v) {
 		Intent intent = new Intent(SettingsActivity.this, AccountActivity.class);
+		startActivity(intent);
+	}
+	
+	public void viewMap(View v) {
+		Intent intent = new Intent(SettingsActivity.this, MapActivity.class);
 		startActivity(intent);
 	}
 

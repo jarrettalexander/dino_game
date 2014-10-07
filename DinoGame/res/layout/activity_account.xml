@@ -37,7 +37,8 @@
         android:layout_alignBaseline="@+id/button3"
         android:layout_alignBottom="@+id/button3"
         android:layout_toRightOf="@+id/button2"
-        android:text="M" />
+        android:text="M"
+        android:onClick="viewMap" />
 
     <Button
         android:id="@+id/button3"
@@ -47,7 +48,8 @@
         android:layout_alignBaseline="@+id/button1"
         android:layout_alignBottom="@+id/button1"
         android:layout_toLeftOf="@+id/button4"
-        android:text="P" />
+        android:text="P"
+        android:onClick="viewPlayer" />
 
     <Button
         android:id="@+id/button1"

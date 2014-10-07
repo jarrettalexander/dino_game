@@ -22,7 +22,8 @@
         android:layout_alignBaseline="@+id/button5"
         android:layout_alignBottom="@+id/button5"
         android:layout_toRightOf="@+id/button4"
-        android:text="S" />
+        android:text="S"
+        android:onClick="viewSettings" />
 
     <Button
         android:id="@+id/button5"
@@ -32,8 +33,7 @@
         android:layout_alignBaseline="@+id/button3"
         android:layout_alignBottom="@+id/button3"
         android:layout_toRightOf="@+id/button2"
-        android:text="M"
-        android:onClick="viewMap" />
+        android:text="M" />
 
     <Button
         android:id="@+id/button3"
@@ -62,16 +62,24 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/button3"
-        android:text="Settings"
+        android:text="Map"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true" >
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="Search:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </ListView>
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:ems="10" />
 
 </RelativeLayout>

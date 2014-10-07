@@ -35,6 +35,11 @@ public class SummaryActivity extends ActionBarActivity {
 	}
 	
 	// Button listeners
+	public void viewPlayer(View v) {
+		Intent intent = new Intent(SummaryActivity.this, PlayerActivity.class);
+		startActivity(intent);
+	}
+	
 	public void viewAccount(View v) {
 		Intent intent = new Intent(SummaryActivity.this, AccountActivity.class);
 		startActivity(intent);
@@ -42,6 +47,11 @@ public class SummaryActivity extends ActionBarActivity {
 	
 	public void viewSettings(View v) {
 		Intent intent = new Intent(SummaryActivity.this, SettingsActivity.class);
+		startActivity(intent);
+	}
+	
+	public void viewMap(View v) {
+		Intent intent = new Intent(SummaryActivity.this, MapActivity.class);
 		startActivity(intent);
 	}
 }
