@@ -75,6 +75,7 @@ public class MapActivity extends FragmentActivity
             GEOFENCE_EXPIRATION_IN_HOURS * DateUtils.HOUR_IN_MILLIS;
     
     private SimpleGeofence mCurrentGeofence;
+    private ArrayList<SimpleGeofence> mSimpleGeofenceList;
     private List<Geofence> mGeofenceList;
     private SimpleGeofenceStore mGeofenceStorage;
     
@@ -118,6 +119,7 @@ public class MapActivity extends FragmentActivity
 		setContentView(R.layout.activity_map);
 		
 		mInProgress = false;
+		mSimpleGeofenceList = new ArrayList<SimpleGeofence>();
 		
 		 // Set and localize the latitude/longitude format
         String latLngPattern = getString(R.string.lat_lng_pattern);
@@ -131,6 +133,7 @@ public class MapActivity extends FragmentActivity
 		
 		// Instantiate a new geofence storage area
 		mGeofenceStorage = new SimpleGeofenceStore(this);
+		mGeofenceStorage.open();
 		
         // Create a new broadcast receiver to receive updates from the listeners and service
         mBroadcastReceiver = new GeofenceSampleReceiver();
@@ -190,6 +193,8 @@ public class MapActivity extends FragmentActivity
 	@Override
 	protected void onResume() {
 		super.onResume();
+		mGeofenceStorage.open();
+		
 		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, mIntentFilter);
 		
 		loadCurrentGeofence();
@@ -198,6 +203,8 @@ public class MapActivity extends FragmentActivity
 	@Override
     public void onPause() {
         super.onPause();
+        
+        mGeofenceStorage.close();
     }
 	
 	@Override
@@ -476,7 +483,10 @@ public class MapActivity extends FragmentActivity
         	Toast.makeText(context, "Geofence Transition Occured", Toast.LENGTH_LONG).show();
         	
         	//Update SharedPreferences
-        	mGeofenceStorage.incrementLastGeofenceReceived(mCurrentGeofence.getId());
+        	//mGeofenceStorage.incrementLastGeofenceReceived(mCurrentGeofence.getId());
+        	
+        	// Update Database
+        	mGeofenceStorage.setLocationToCompleted(mCurrentGeofence.getId());
         }
 
         /**
@@ -494,8 +504,16 @@ public class MapActivity extends FragmentActivity
     private void loadCurrentGeofence() {
     	mGeofenceList.clear();
     	
-    	mCurrentGeofence = mGeofenceStorage.getCurrentGeofence();
-    	mGeofenceList.add(mCurrentGeofence.toGeofence());
+    	// Using SharedPreferences...
+    	//mCurrentGeofence = mGeofenceStorage.getCurrentGeofence();
+    	//mGeofenceList.add(mCurrentGeofence.toGeofence());
+    	
+    	// Using SQLite Database...
+    	mSimpleGeofenceList = mGeofenceStorage.getAllGeofences();
+    	if(mSimpleGeofenceList.get(0) != null) {
+    		mCurrentGeofence = mSimpleGeofenceList.get(0);
+    		mGeofenceList.add(mCurrentGeofence.toGeofence());
+    	}
     	
     	addGeofence();
     }
@@ -584,8 +602,8 @@ public class MapActivity extends FragmentActivity
  
   //Method for testing purposes
   private void addTestGeofence() {
-	  SimpleGeofence geo = new SimpleGeofence("123", 36.0742414, -94.2218162, 500f, GEOFENCE_EXPIRATION_IN_MILLISECONDS, Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT);
-	  mGeofenceStorage.setGeofence(geo.getId(), geo);
+	  SimpleGeofence geo = new SimpleGeofence("123", 36.0742414, -94.2218162, 500f, GEOFENCE_EXPIRATION_IN_MILLISECONDS, Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT, 1234, false);  
+	  mGeofenceStorage.createGeofence(geo);
   }
   
   //Button listeners

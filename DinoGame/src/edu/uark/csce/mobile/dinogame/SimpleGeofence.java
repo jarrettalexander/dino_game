@@ -11,6 +11,8 @@ public class SimpleGeofence {
 	private final float mRadius;
 	private long mExpirationDuration;
 	private int mTransitionType;
+	private long mItemId;
+	private boolean mCompleted;
 	
 	/**
      * @param geofenceId The Geofence's request ID
@@ -20,13 +22,15 @@ public class SimpleGeofence {
      * @param expiration Geofence expiration duration
      * @param transition Type of Geofence transition.
      */
-	public SimpleGeofence(String geofenceId, double latitude, double longitude, float radius, long expiration, int transition) {
+	public SimpleGeofence(String geofenceId, double latitude, double longitude, float radius, long expiration, int transition, long itemId, boolean completed) {
 		this.mId = geofenceId;
 		this.mLatitude = latitude;
 		this.mLongitude = longitude;
 		this.mRadius = radius;
 		this.mExpirationDuration = expiration;
 		this.mTransitionType = transition;
+		this.mItemId = itemId;
+		this.mCompleted = completed;
 	}
 
 	public String getId() {
@@ -51,6 +55,18 @@ public class SimpleGeofence {
 
 	public int getTransitionType() {
 		return mTransitionType;
+	}
+	
+	public long getItemId() {
+		return mItemId;
+	}
+	
+	public void setCompleted(boolean completed) {
+		this.mCompleted = completed;
+	}
+	
+	public boolean getCompleted() {
+		return mCompleted;
 	}
 	
 	/**

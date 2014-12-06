@@ -84,11 +84,13 @@ public final class GeofenceUtils {
 
     public static final String KEY_RADIUS = "edu.uark.csce.mobile.dinogame.KEY_RADIUS";
 
-    public static final String KEY_EXPIRATION_DURATION =
-            "edu.uark.csce.mobile.dinogame.KEY_EXPIRATION_DURATION";
+    public static final String KEY_EXPIRATION_DURATION = "edu.uark.csce.mobile.dinogame.KEY_EXPIRATION_DURATION";
 
-    public static final String KEY_TRANSITION_TYPE =
-            "edu.uark.csce.mobile.dinogame.KEY_TRANSITION_TYPE";
+    public static final String KEY_TRANSITION_TYPE = "edu.uark.csce.mobile.dinogame.KEY_TRANSITION_TYPE";
+    
+    public static final String KEY_ITEM_ID = "edu.uark.csce.mobile.dinogame.KEY_ITEM_ID";
+    
+    public static final String KEY_COMPLETED = "edu.uark.csce.mobile.dinogame.KEY_COMPLETED";
 
     // The prefix for flattened geofence keys
     public static final String KEY_PREFIX =
