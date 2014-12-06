@@ -70,13 +70,23 @@
         android:text="Stats and Summary"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <ExpandableListView
-        android:id="@+id/expandableListView1"
+    <ListView
+        android:id="@+id/listView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/button6"
         android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true" >
 
-    </ExpandableListView>
+    </ListView>
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Add Dino"
+        android:onClick="createDino" />
 
 </RelativeLayout>

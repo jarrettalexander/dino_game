@@ -31,6 +31,8 @@
         
         <activity android:name=".MapActivity" />
         
+        <activity android:name=".CreateDinoActivity" />
+        
     </application>
 
 </manifest>
