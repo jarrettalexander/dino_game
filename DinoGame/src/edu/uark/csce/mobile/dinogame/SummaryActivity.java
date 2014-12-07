@@ -148,11 +148,11 @@ public class SummaryActivity extends ActionBarActivity {
 		//method for converting string to bytearray to img
 		tmp = t;
 		
-		Log.d("tmp", tmp);
+		/*Log.d("tmp", tmp);
 		byte[] data = Base64.decode(tmp, Base64.DEFAULT);
 		Bitmap bmp = BitmapFactory.decodeByteArray(data,0, data.length);
 		img = (ImageView) findViewById(R.id.imageView1);
-		img.setImageBitmap(bmp);
+		img.setImageBitmap(bmp);*/
 	}
 	
 }
