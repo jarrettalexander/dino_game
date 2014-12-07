@@ -169,6 +169,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
     	
     	// Create a mutable copy of the bitmap
 		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
+		bp.setHasAlpha(true);
 		
 		// Recolor dino based on greyscale image
 	    for(int j = 0; j < bp.getHeight(); j++) {
@@ -181,13 +182,13 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
 	    			bp.setPixel(i, j, dino.getColorAccent2());
 	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
-	    			bp.setPixel(i, j, Color.argb(0, 255, 0, 0));
+	    			bp.setPixel(i, j, Color.TRANSPARENT);
 	    		}
 	    	}
 	    }
 	    
 	    // Scale bitmap to appropriate size
-	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * 8, bp.getHeight() * 8, false);
+	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * 12, bp.getHeight() * 12, false);
     		  
 	    // Set ImageView to dino bitmap
 	    dinoPic = (ImageView)findViewById(R.id.dinosaur);
