@@ -55,19 +55,14 @@ import android.widget.Toast;
 
 public class MapActivity extends FragmentActivity 
 		implements com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks, 
-		//com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks,
 		OnConnectionFailedListener, 
-		OnAddGeofencesResultListener//, 
-		//LocationListener, 
-		//com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener {
+		OnAddGeofencesResultListener
 		{
 	
 	/*TODO: create local variables for: current geofence, current itemReward
 	 * structure storage of geofence data, expiration data ((expiration date from database - current date) in ms), and RewardItem data together
-	 * add code to insert test geofences to SharedPreferences on startup to test
 	 * add event handlers for entering currentGeofence that launches dialog saying "Congrats! etc" and adding item to current storage of items
-	 * structure getting of current geofence from SharedPreferences(?) on startup and activating it
-	 * create map view to view current geofence in real time
+	 * structure getting of current geofence from database on startup and activating it
 	 */
 	
 	private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
@@ -143,6 +138,9 @@ public class MapActivity extends FragmentActivity
 
         // Action for broadcast Intents that report successful removal of geofences
         mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCES_REMOVED);
+        
+        // Action for broadcast Intents that report geofence transitions
+        mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCE_TRANSITION);
 
         // Action for broadcast Intents containing various types of geofencing errors
         mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCE_ERROR);
@@ -157,37 +155,9 @@ public class MapActivity extends FragmentActivity
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		
 		mMap.setMyLocationEnabled(true);
-		/*LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		String provider = locationManager.getBestProvider(criteria, true);
-		android.location.LocationListener locationListener = new android.location.LocationListener() {
-			@Override
-			public void onLocationChanged(Location location) {
-				drawUserMarker(location);
-			}
 
-			@Override
-			public void onProviderDisabled(String arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onProviderEnabled(String arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-		locationManager.requestLocationUpdates(provider, 10000L, 0f, locationListener);*/
-		
 		// Testing
-		addTestGeofence();
+		//addTestGeofence();
 	}
 
 	@Override
@@ -195,6 +165,7 @@ public class MapActivity extends FragmentActivity
 		super.onResume();
 		mGeofenceStorage.open();
 		
+		Log.d(GeofenceUtils.APPTAG, "in onResume");
 		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, mIntentFilter);
 		
 		loadCurrentGeofence();
@@ -431,10 +402,11 @@ public class MapActivity extends FragmentActivity
          */
         @Override
         public void onReceive(Context context, Intent intent) {
-        	Log.d(GeofenceUtils.APPTAG, "GeofenceSampleReceiver picked up something.");
 
             // Check the action code and determine what to do
             String action = intent.getAction();
+            
+            Log.d(GeofenceUtils.APPTAG, "GeofenceSampleReceiver picked up something: " + action);
 
             // Intent contains information about errors in adding or removing geofences
             if (TextUtils.equals(action, GeofenceUtils.ACTION_GEOFENCE_ERROR)) {
@@ -478,15 +450,18 @@ public class MapActivity extends FragmentActivity
          * @param intent The Intent containing the transition
          */
         private void handleGeofenceTransition(Context context, Intent intent) {
+        	//String msg = intent.getStringExtra("msg");
+        	
             // TODO: UI change on transition
         	Log.d(GeofenceUtils.APPTAG, "Geofence transition occured: " + intent.getAction());
+        	//Log.d(GeofenceUtils.APPTAG, "msg: " + msg);
         	Toast.makeText(context, "Geofence Transition Occured", Toast.LENGTH_LONG).show();
         	
         	//Update SharedPreferences
         	//mGeofenceStorage.incrementLastGeofenceReceived(mCurrentGeofence.getId());
         	
         	// Update Database
-        	mGeofenceStorage.setLocationToCompleted(mCurrentGeofence.getId());
+        	//mGeofenceStorage.setLocationToCompleted(mCurrentGeofence.getId());
         }
 
         /**
@@ -510,9 +485,13 @@ public class MapActivity extends FragmentActivity
     	
     	// Using SQLite Database...
     	mSimpleGeofenceList = mGeofenceStorage.getAllGeofences();
-    	if(mSimpleGeofenceList.get(0) != null) {
+    	Log.d("count", String.valueOf(mSimpleGeofenceList.size()));
+    	/*if(mSimpleGeofenceList.get(0) != null) {
     		mCurrentGeofence = mSimpleGeofenceList.get(0);
     		mGeofenceList.add(mCurrentGeofence.toGeofence());
+    	}*/
+    	for (SimpleGeofence fence : mSimpleGeofenceList){
+    		mGeofenceList.add(fence.toGeofence());
     	}
     	
     	addGeofence();
@@ -520,7 +499,7 @@ public class MapActivity extends FragmentActivity
     
     private void updateMap() {
     	
-    	if(mCurrentGeofence != null) {
+    	/*if(mCurrentGeofence != null) {
     		LatLng location = new LatLng(mCurrentGeofence.getLatitude(), mCurrentGeofence.getLongitude());
     		mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, 16);
@@ -531,6 +510,25 @@ public class MapActivity extends FragmentActivity
     		CircleOptions circleOptions = new CircleOptions()
     			.center(location)
     			.radius(mCurrentGeofence.getRadius())
+    			.fillColor(0x40ff0000)
+    			.strokeColor(Color.TRANSPARENT)
+    			.strokeWidth(2);
+    		
+    		Circle circle = mMap.addCircle(circleOptions);
+    	}*/
+    	mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+    	for (SimpleGeofence fence : mSimpleGeofenceList){
+    		Log.d("adding geofence...", fence.toString());
+    		LatLng location = new LatLng(fence.getLatitude(), fence.getLongitude());
+    		
+    		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, 16);
+    		mMap.animateCamera(update);
+    		mMap.addMarker(new MarkerOptions().position(location).title("Geofence is here! " + fence.getId()));
+    		
+    		// Add circle
+    		CircleOptions circleOptions = new CircleOptions()
+    			.center(location)
+    			.radius(fence.getRadius())
     			.fillColor(0x40ff0000)
     			.strokeColor(Color.TRANSPARENT)
     			.strokeWidth(2);

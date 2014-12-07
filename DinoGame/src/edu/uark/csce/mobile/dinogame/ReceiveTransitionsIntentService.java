@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -43,9 +44,25 @@ public class ReceiveTransitionsIntentService extends IntentService {
 				String ids = TextUtils.join(GeofenceUtils.GEOFENCE_ID_DELIMITER, triggerIds);
                 String transitionString = getTransitionString(transitionType);
 
+                Intent broadcastIntent = new Intent();
+                broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_TRANSITION)
+                			   .addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES);
+                			   //.putExtra("msg", "message wooooo");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                
+                // TODO: move notification send to after item is retrieved from server
                 sendNotification(transitionString, ids);
                 
                 // TODO: add item to inventory in sharedPrefs and start mainActivity of game
+                Log.d(GeofenceUtils.APPTAG, "Setting completed to true for Geofence: " + triggerIds[0]);
+                
+                // Mark triggered Geofences as completed
+                SimpleGeofenceStore store = new SimpleGeofenceStore(this);
+                store.open();
+                for(int i = 0; i < triggerIds.length; i++) {
+                	store.setLocationToCompleted(triggerIds[i]);
+                }
+                store.close();
 
              // Log the transition type and a message
                 Log.d(GeofenceUtils.APPTAG,
