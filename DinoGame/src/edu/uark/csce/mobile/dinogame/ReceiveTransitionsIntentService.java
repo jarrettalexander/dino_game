@@ -47,12 +47,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
 				
 				String ids = TextUtils.join(GeofenceUtils.GEOFENCE_ID_DELIMITER, triggerIds);
                 String transitionString = getTransitionString(transitionType);
-
-                Intent broadcastIntent = new Intent();
-                broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_TRANSITION)
-                			   .addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES);
-                			   //.putExtra("msg", "message wooooo");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
                 
                 // TODO: move notification send to after item is retrieved from server
                 sendNotification(transitionString, ids);
@@ -67,15 +61,21 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 	store.setLocationToCompleted(triggerIds[i]);
                 } 
                 store.close();
+                
+                // Send a broadcast intent that can be received by the MapActivity's GeofenceSampleReceiver class
+                Intent broadcastIntent = new Intent();
+                broadcastIntent.setAction(GeofenceUtils.ACTION_GEOFENCE_TRANSITION)
+                			   .addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES)
+                			   // Use put extra to send additional data to MapActivity
+                			   .putExtra(GeofenceUtils.EXTRA_GEOFENCE_INFO, "some message"); 
+                LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
 
-             // Log the transition type and a message
-                Log.d(GeofenceUtils.APPTAG,
-                        getString(
-                                R.string.geofence_transition_notification_title,
-                                transitionType,
-                                ids));
-                Log.d(GeofenceUtils.APPTAG,
-                        getString(R.string.geofence_transition_notification_text));
+                // Log the transition type and a message
+                Log.d(GeofenceUtils.APPTAG, getString(
+                                				R.string.geofence_transition_notification_title,
+                                				transitionType,
+                                				ids));
+                Log.d(GeofenceUtils.APPTAG, getString(R.string.geofence_transition_notification_text));
 
             //get items from servr by location entered
                 getItemsByLocation(triggerIds);
@@ -91,9 +91,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
 	
     private void sendNotification(String transitionType, String ids) {
 
-        // Create an explicit content Intent that starts the main Activity
+        // Create an explicit content Intent that starts the Inventory Activity
+    	// TODO: point to the actual inventory activity
         Intent notificationIntent =
-                new Intent(getApplicationContext(), MapActivity.class);
+                new Intent(getApplicationContext(), SummaryActivity.class);
 
         // Construct a task stack
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);

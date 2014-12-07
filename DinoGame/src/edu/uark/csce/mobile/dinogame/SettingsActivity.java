@@ -19,7 +19,7 @@ public class SettingsActivity extends Activity {
 	}
 	
 	public void viewPlayer(View v) {
-		Intent intent = new Intent(SettingsActivity.this, PlayerActivity.class);
+		Intent intent = new Intent(SettingsActivity.this, CharacterActivity.class);
 		startActivity(intent);
 	}
 	

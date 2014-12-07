@@ -65,7 +65,7 @@ public class SummaryActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				
-				Intent intent = new Intent(SummaryActivity.this, PlayerActivity.class);
+				Intent intent = new Intent(SummaryActivity.this, CharacterActivity.class);
 				intent.putExtra(EXTRA_POSITION, position);
 				startActivity(intent);
 			}
@@ -119,7 +119,7 @@ public class SummaryActivity extends ActionBarActivity {
 	
 	// Button listeners
 	public void viewPlayer(View v) {
-		Intent intent = new Intent(SummaryActivity.this, PlayerActivity.class);
+		Intent intent = new Intent(SummaryActivity.this, CharacterActivity.class);
 		startActivity(intent);
 	}
 	

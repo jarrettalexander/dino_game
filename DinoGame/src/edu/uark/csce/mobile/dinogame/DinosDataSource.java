@@ -25,10 +25,11 @@ public class DinosDataSource {
 			MySQLiteHelper.COLUMN_DATE,
 			MySQLiteHelper.COLUMN_LEVEL,
 			MySQLiteHelper.COLUMN_EXP,
-			MySQLiteHelper.COLUMN_ATTACK,
-			MySQLiteHelper.COLUMN_DEFENSE,
-			MySQLiteHelper.COLUMN_SPECIAL,
-			MySQLiteHelper.COLUMN_IMG};
+			MySQLiteHelper.COLUMN_STATS,
+			MySQLiteHelper.COLUMN_COLOR_ONE,
+			MySQLiteHelper.COLUMN_COLOR_TWO,
+			MySQLiteHelper.COLUMN_COLOR_THREE,
+			MySQLiteHelper.COLUMN_EQUIP};
 	private String listSort = MySQLiteHelper.COLUMN_DATE + " ASC";
 
 	public DinosDataSource(Context context) {
@@ -43,30 +44,33 @@ public class DinosDataSource {
 		dbHelper.close();
 	}
 
-	public DinoItem createDinoItem(String name, Date date, int level, int experience, int attack, int defense, int special, byte[] image) {
+	public DinoItem createDinoItem(String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, int equipID) {
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_NAME, name);
 		values.put(MySQLiteHelper.COLUMN_DATE, new SimpleDateFormat("yyyy-MM-dd").format(date));
 		values.put(MySQLiteHelper.COLUMN_LEVEL, level);
 		values.put(MySQLiteHelper.COLUMN_EXP, experience);
-		values.put(MySQLiteHelper.COLUMN_ATTACK, attack);
-		values.put(MySQLiteHelper.COLUMN_DEFENSE, defense);
-		values.put(MySQLiteHelper.COLUMN_SPECIAL, special);
-		values.put(MySQLiteHelper.COLUMN_IMG, image);
+		values.put(MySQLiteHelper.COLUMN_STATS, stats);
+		values.put(MySQLiteHelper.COLUMN_COLOR_ONE, colorMain);
+		values.put(MySQLiteHelper.COLUMN_COLOR_TWO, colorAccent1);
+		values.put(MySQLiteHelper.COLUMN_COLOR_THREE, colorAccent2);
+		if(equipID != -1) {
+			values.put(MySQLiteHelper.COLUMN_EQUIP, equipID);
+		}
 		long insertId = database.insert(MySQLiteHelper.TABLE_DINOS, null,
 				values);
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_DINOS,
 				allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
 				null, null, null);
 		cursor.moveToFirst();
-		DinoItem newDino = cursorToWorkout(cursor);
+		DinoItem newDino = cursorToDino(cursor);
 		cursor.close();
 		return newDino;
 	}
 
 	public void deleteDino(DinoItem dino) {
 		long id = dino.getmID();
-		System.out.println("Workout deleted with id: " + id);
+		System.out.println("Dino deleted with id: " + id);
 		database.delete(MySQLiteHelper.TABLE_DINOS, MySQLiteHelper.COLUMN_ID
 				+ " = " + id, null);
 	}
@@ -79,7 +83,7 @@ public class DinosDataSource {
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			DinoItem dino = cursorToWorkout(cursor);
+			DinoItem dino = cursorToDino(cursor);
 			dinos.add(dino);
 			cursor.moveToNext();
 		}
@@ -88,39 +92,21 @@ public class DinosDataSource {
 		return dinos;
 	}
 
-	private DinoItem cursorToWorkout(Cursor cursor) throws ParseException {
+	private DinoItem cursorToDino(Cursor cursor) throws ParseException {
 		DinoItem dino = new DinoItem();
 		dino.setmID(cursor.getLong(0));
 		dino.setmName(cursor.getString(1));
-//		Date d = new Date();
-//		try {
-//	         d =  new SimpleDateFormat("yyyy-MM-dd").parse(cursor.getString(2));
-//	         dino.setmCreatedDate(d);
-//	    } catch (ParseException e) {
-//	        e.printStackTrace();
-//	    } finally {
-//	    	
-//	    }
 		dino.setmCreatedDate(cursor.getString(2));
 		dino.setmLevel(cursor.getInt(3));
 		dino.setmExperience(cursor.getInt(4));
-		dino.setmAttack(cursor.getInt(5));
-		dino.setmDefense(cursor.getInt(6));
-		dino.setmSpecial(cursor.getInt(7));
-		dino.setmImage(cursor.getBlob(8));
+		dino.setmStats(cursor.getBlob(5));
+		dino.setColorMain(cursor.getInt(6));
+		dino.setColorAccent1(cursor.getInt(7));
+		dino.setColorAccent2(cursor.getInt(8));
+		if(cursor.getInt(7) != -1) {
+			dino.setmEquip(cursor.getInt(9));
+		}
 		return dino;
-	}
-	
-	// For converting from ArrayList<Double> to byte array
-	public static byte[] convertList(ArrayList<Double> list) throws IOException {
-
-	    ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	    DataOutputStream dout = new DataOutputStream(bout);
-	    for (double d : list) {
-	        dout.writeDouble(d);
-	    }
-	    dout.close();
-	    return bout.toByteArray();
 	}
 
 }

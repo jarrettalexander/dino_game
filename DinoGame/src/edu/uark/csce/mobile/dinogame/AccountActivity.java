@@ -19,7 +19,7 @@ public class AccountActivity extends Activity {
 	}
 	
 	public void viewPlayer(View v) {
-		Intent intent = new Intent(AccountActivity.this, PlayerActivity.class);
+		Intent intent = new Intent(AccountActivity.this, CharacterActivity.class);
 		startActivity(intent);
 	}
 	

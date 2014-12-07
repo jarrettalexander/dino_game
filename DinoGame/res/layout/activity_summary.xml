@@ -85,8 +85,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Add Dino"
-        android:onClick="createDino" />
+        android:layout_alignParentLeft="true"
+        android:onClick="createDino"
+        android:text="Add Dino" />
+
+    <Button
+        android:id="@+id/button7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/listView1"
+        android:layout_below="@+id/listView1"
+        android:onClick="viewMap"
+        android:text="Get Item" />
 
 </RelativeLayout>

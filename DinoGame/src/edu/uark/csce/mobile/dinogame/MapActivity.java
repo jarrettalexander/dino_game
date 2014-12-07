@@ -388,8 +388,7 @@ public class MapActivity extends FragmentActivity
 			Log.d(GeofenceUtils.APPTAG, "Request already underway.");
 			// TODO: disconnect client, reset flag, retry request
 		}
-	}
-	
+	}	
 	
 	/**
      * Define a Broadcast receiver that receives updates from connection listeners and
@@ -611,7 +610,7 @@ public class MapActivity extends FragmentActivity
 	}
 	
 	public void viewPlayer(View v) {
-		Intent intent = new Intent(MapActivity.this, PlayerActivity.class);
+		Intent intent = new Intent(MapActivity.this, CharacterActivity.class);
 		startActivity(intent);
 	}
 	
