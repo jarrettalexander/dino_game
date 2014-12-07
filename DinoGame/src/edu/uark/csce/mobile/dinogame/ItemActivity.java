@@ -5,55 +5,42 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
-public class BattleActivity extends Activity {
+public class ItemActivity extends Activity {
 	
 	// Database
-	private DinosDataSource datasource;
-	List<DinoItem> dinoItems;
+	private InventoryDataSource datasource;
+	List<InventoryItem> invItems;
 	
 	// Dino info
 	private int position;
-	private DinoItem dino;
+	private InventoryItem item;
 	private ArrayList<Integer> stats;
 	private boolean equipped;
-	private int[] color = {0, 0, 0};
 	
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_battle);
+		setContentView(R.layout.activity_character);
 		
-		datasource = new DinosDataSource(this);
+		datasource = new InventoryDataSource(this);
 		datasource.open();
 		
 		// Store the dinos in list
-		dinoItems = datasource.getAllDinos();
-
+		invItems = datasource.getAllItems();
+		
 		// Retrieve dino info
 		Intent intent = getIntent();
-		position = intent.getIntExtra(SummaryActivity.EXTRA_POSITION, 0);
-		dino = dinoItems.get(position);
+		position = intent.getIntExtra(InventoryActivity.EXTRA_POSITION, 0);
+		item = invItems.get(position);
 		stats = new ArrayList<Integer>();
 		try {
-			convertBytes(dino.getmStats());
+			convertBytes(item.getStatEffects());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(dino.getmEquip() == -1)
-			equipped = false;
-		
-	}
-	
-	// Button listeners
-	public void forfeit(View v) {
-		Intent intent = new Intent(BattleActivity.this, SummaryActivity.class);
-		startActivity(intent);
 	}
 	
 	// Converts byte arrays for latitudes and longitudes to array lists

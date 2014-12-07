@@ -47,6 +47,12 @@
         
         <activity android:name=".CreateDinoActivity" />
         
+        <activity android:name=".BattleActivity" />
+        
+        <activity android:name=".InventoryActivity" />
+        
+        <activity android:name=".ItemActivity" />
+        
         <service
     		android:name="edu.uark.csce.mobile.dinogame.ReceiveTransitionsIntentService"
     		android:label="@string/app_name"

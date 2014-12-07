@@ -95,18 +95,13 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		startActivity(intent);
 	}
 	
-	public void viewAccount(View v) {
-		Intent intent = new Intent(CharacterActivity.this, AccountActivity.class);
+	public void enterBattle(View v) {
+		Intent intent = new Intent(CharacterActivity.this, BattleActivity.class);
 		startActivity(intent);
 	}
 	
-	public void viewSettings(View v) {
-		Intent intent = new Intent(CharacterActivity.this, SettingsActivity.class);
-		startActivity(intent);
-	}
-	
-	public void viewMap(View v) {
-		Intent intent = new Intent(CharacterActivity.this, MapActivity.class);
+	public void equipItem(View v) {
+		Intent intent = new Intent(CharacterActivity.this, InventoryActivity.class);
 		startActivity(intent);
 	}
 	
