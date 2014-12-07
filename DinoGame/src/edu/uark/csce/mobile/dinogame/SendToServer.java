@@ -41,6 +41,7 @@ import android.widget.TextView;
 		public ArrayList<DinoItem> dinoitems;
 		public ProgressDialog pDialog;
 		public InventoryDataSource invDataSource;
+		public ArrayList<InventoryItem> invitems;
 		public String bmpString;
 		public String function;
 		// Creating JSON Parser object
@@ -83,6 +84,7 @@ import android.widget.TextView;
 			mGeofenceStore = new SimpleGeofenceStore(con);
 			dinoitems = new ArrayList<DinoItem>();
 			invDataSource = new InventoryDataSource(con);
+			invitems = new ArrayList<InventoryItem>();
 		}
 		public JSONObject URLRequest(String url, String action, List<NameValuePair> params){
 			return jParser.makeHttpRequest(url, action, params);
@@ -91,6 +93,17 @@ import android.widget.TextView;
 		
 		public String getBmp(){
 			return bmpString;
+		}
+		public void addItemsToDB(){
+			if (invitems.size() < 1){
+				return;
+			}
+			invDataSource.open();
+			for (InventoryItem i : invitems){
+				invDataSource.insertInventoryItem(i);
+			}
+			invDataSource.close();
+			invitems.clear();
 		}
 		public void addLocationsToDB(){
 			if (geofences.size() < 1){
@@ -103,6 +116,7 @@ import android.widget.TextView;
 				mGeofenceStore.createGeofence(fence);
 			}
 			mGeofenceStore.close();
+			geofences.clear();
 		}
 		public String GetGeofenceLocations(){
 				
@@ -210,9 +224,7 @@ import android.widget.TextView;
 				        byte[] imgByteArray = img_string.getBytes(Charset.forName("UTF-8"));
 
 						InventoryItem item = new InventoryItem(item_id, name, array, imgByteArray, color_main, acc1, acc2);
-						invDataSource.open();
-						invDataSource.insertInventoryItem(item);
-						invDataSource.close();
+						invitems.add(item);
 					}
 				}
 			}catch (JSONException e){
@@ -271,6 +283,7 @@ import android.widget.TextView;
 			case "GetItemsByLocation":
 				//add items to local db
 				//this.activity1.set(bmpString);
+				addItemsToDB();
 				break;
 			}
 			Log.d("sum act", "setting tmp");
