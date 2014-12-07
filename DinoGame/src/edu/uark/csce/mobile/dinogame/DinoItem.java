@@ -16,22 +16,26 @@ public class DinoItem {
 	private int mLevel;
 	private int mExperience;
 	private byte[] mStats;
-	private int mColor;
+	private int mColorMain;
+	private int mColorAccent1;
+	private int mColorAccent2;
 	private int mEquip = -1;
 
 	public DinoItem() {
-		// Initialize first workout
+		// Initialize dino
 		mID = 1;
 		mName = "Dino";
 		mCreatedDate = new Date();
 		mLevel = 0;
 		mExperience = 0;
 		mStats = null;
-		mColor = 0;
+		mColorMain = 0xFF00FF00;
+		mColorAccent1 = 0xFFFF0000;
+		mColorAccent2 = 0xFF0000FF;
 		mEquip = -1;
 	}
 	
-	public DinoItem(long ID, String name, Date date, int level, int experience, byte[] stats, int color, int equip) {
+	public DinoItem(long ID, String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, int equip) {
 		// Initialize first dino
 		mID = ID;
 		mName = name;
@@ -39,7 +43,9 @@ public class DinoItem {
 		mLevel = level;
 		mExperience = experience;
 		mStats = stats;
-		mColor = color;
+		mColorMain = colorMain;
+		mColorAccent1 = colorAccent1;
+		mColorAccent2 = colorAccent2;
 		mEquip = equip;
 	}
 	
@@ -100,14 +106,30 @@ public class DinoItem {
 		this.mStats = mStats;
 	}
 
-	public int getmColor() {
-		return mColor;
+	public int getColorMain() {
+		return mColorMain;
 	}
 
-	public void setmColor(int mColor) {
-		this.mColor = mColor;
+	public void setColorMain(int mColor) {
+		this.mColorMain = mColor;
 	}
-
+	
+	public int getColorAccent1() {
+		return this.mColorAccent1;
+	}
+	
+	public void setColorAccent1(int color) {
+		this.mColorAccent1 = color;
+	}
+	
+	public int getColorAccent2() {
+		return this.mColorAccent2;
+	}
+	
+	public void setColorAccent2(int color) {
+		this.mColorAccent2 = color;
+	}
+ 
 	public int getmEquip() {
 		return mEquip;
 	}

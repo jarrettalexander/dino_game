@@ -23,7 +23,10 @@ public class InventoryDataSource {
 	private String[] allColumns = { MySQLiteHelper.COLUMN_ITEM,
 			MySQLiteHelper.COLUMN_NAME,
 			MySQLiteHelper.COLUMN_STAT,
-			MySQLiteHelper.COLUMN_ICON};
+			MySQLiteHelper.COLUMN_ICON,
+			MySQLiteHelper.COLUMN_ITEM_COLOR_ONE,
+			MySQLiteHelper.COLUMN_ITEM_COLOR_TWO,
+			MySQLiteHelper.COLUMN_ITEM_COLOR_THREE};
 	private String listSort = MySQLiteHelper.COLUMN_NAME;
 
 	public InventoryDataSource(Context context) {
@@ -38,11 +41,14 @@ public class InventoryDataSource {
 		dbHelper.close();
 	}
 
-	public InventoryItem createInventoryItem(String name, byte[] stats, byte[] icon) {
+	public InventoryItem createInventoryItem(String name, byte[] stats, byte[] icon, int colorMain, int colorAccent1, int colorAccent2) {
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_NAME, name);
 		values.put(MySQLiteHelper.COLUMN_STAT, stats);
 		values.put(MySQLiteHelper.COLUMN_ICON, icon);
+		values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_ONE, colorMain);
+		values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_TWO, colorAccent1);
+		values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_THREE, colorAccent2);
 		long insertId = database.insert(MySQLiteHelper.TABLE_ITEMS, null,
 				values);
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
@@ -84,6 +90,9 @@ public class InventoryDataSource {
 		invItem.setName(cursor.getString(1));
 		invItem.setStatEffects(cursor.getBlob(2));
 		invItem.setIcon(cursor.getBlob(3));
+		invItem.setColorMain(cursor.getInt(4));
+		invItem.setColorAccent1(cursor.getInt(5));
+		invItem.setColorAccent2(cursor.getInt(6));
 		return invItem;
 	}
 

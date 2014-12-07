@@ -69,7 +69,17 @@
             android:layout_height="wrap_content"
             android:text="Green" />
     </RadioGroup>
-
+    
+    <TextView
+        android:id="@+id/textColor1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/colorField"
+        android:layout_below="@+id/colorField"
+        android:layout_marginTop="20dp"
+        android:text="color1 here"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -89,5 +99,58 @@
         android:layout_toRightOf="@+id/textView3"
         android:onClick="cancelAdd"
         android:text="Cancel" />
+
+    <Button
+        android:id="@+id/buttonChooseColor1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textColor1"
+        android:layout_alignBottom="@+id/textColor1"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="18dp"
+        android:layout_toRightOf="@+id/textColor1"
+        android:text="Main Color" />
+    
+    <TextView
+        android:id="@+id/textColor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/colorField"
+        android:layout_below="@+id/textColor1"
+        android:layout_marginTop="20dp"
+        android:text="color2 here"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Button
+        android:id="@+id/buttonChooseColor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textColor2"
+        android:layout_alignBottom="@+id/textColor2"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="18dp"
+        android:layout_toRightOf="@+id/textColor2"
+        android:text="Eye Color" />
+    
+    <TextView
+        android:id="@+id/textColor3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/colorField"
+        android:layout_below="@+id/textColor2"
+        android:layout_marginTop="20dp"
+        android:text="color3 here"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Button
+        android:id="@+id/buttonChooseColor3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textColor3"
+        android:layout_alignBottom="@+id/textColor3"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="18dp"
+        android:layout_toRightOf="@+id/textColor3"
+        android:text="Accent Color" />
 
 </RelativeLayout>

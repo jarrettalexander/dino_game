@@ -8,19 +8,28 @@ public class InventoryItem {
 	private String name;
 	private byte[] statEffects;
 	private byte[] icon;
+	private int colorMain;
+	private int colorAccent1;
+	private int colorAccent2;
 	
 	public InventoryItem() {
 		id = 1;
 		name = "Item";
 		statEffects = null;
 		icon = null;
+		colorMain = 0xFFFF0000;
+		colorAccent1 = 0xFF00FF00;
+		colorAccent2 = 0xFF0000FF;
 	}
 	
-	public InventoryItem(long mID, String mName, byte[] mStats, byte[] mIcon) {
+	public InventoryItem(long mID, String mName, byte[] mStats, byte[] mIcon, int colorMain, int colorAccent1, int colorAccent2) {
 		id = mID;
 		name = mName;
 		statEffects = mStats;
 		icon = mIcon;
+		this.colorMain = colorMain;
+		this.colorAccent1 = colorAccent1;
+		this.colorAccent2 = colorAccent2;
 	}
 
 	public Long getId() {
@@ -54,5 +63,30 @@ public class InventoryItem {
 	public void setIcon(byte[] icon) {
 		this.icon = icon;
 	}
+	
+	public int getColorMain() {
+		return this.colorMain;
+	}
+	
+	public void setColorMain(int color) {
+		this.colorMain = color;
+	}
+	
+	public int getColorAccent1() {
+		return this.colorAccent1;
+	}
+	
+	public void setColorAccent1(int color) {
+		this.colorAccent1 = color;
+	}
+	
+	public int getColorAccent2() {
+		return this.colorAccent1;
+	}
+	
+	public void setColorAccent2(int color) {
+		this.colorAccent2 = color;
+	}
+	
 	
 }

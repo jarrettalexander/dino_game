@@ -155,12 +155,12 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
     private void drawDinoBitmap() {
     	
     	// Get color from dino object
-    	if(dino.getmColor() == 1)
-			color[0] = 204;
-		else if(dino.getmColor() == 2)
-			color[1] = 255;
-		else if(dino.getmColor() == 3)
-			color[2] = 255;
+//    	if(dino.getmColor() == 1)
+//			color[0] = 204;
+//		else if(dino.getmColor() == 2)
+//			color[1] = 255;
+//		else if(dino.getmColor() == 3)
+//			color[2] = 255;
     	
     	// Handle resizing options to prevent blurring
     	Options options = new BitmapFactory.Options();
@@ -171,11 +171,18 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
 		
 		// Recolor dino based on greyscale image
-	    int color2 = Color.argb(255, 195, 195, 195);
 	    for(int j = 0; j < bp.getHeight(); j++) {
 	    	for(int i = 0; i < bp.getWidth(); i++) {
-	    		if(bp.getPixel(i, j) == color2)
-	    			bp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
+	    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
+	    			//bp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
+	    			bp.setPixel(i, j, dino.getColorMain());
+	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
+	    			bp.setPixel(i, j, dino.getColorAccent1());
+	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
+	    			bp.setPixel(i, j, dino.getColorAccent2());
+	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+	    			bp.setPixel(i, j, Color.argb(0, 255, 0, 0));
+	    		}
 	    	}
 	    }
 	    
