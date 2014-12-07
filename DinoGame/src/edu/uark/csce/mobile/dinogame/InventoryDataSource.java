@@ -40,7 +40,9 @@ public class InventoryDataSource {
 	public void close() {
 		dbHelper.close();
 	}
-
+	public InventoryItem insertInventoryItem(InventoryItem item){
+		return this.createInventoryItem(item.getName(), item.getStatEffects(), item.getIcon(), item.getColorMain(), item.getColorAccent1(), item.getColorAccent2());
+	}
 	public InventoryItem createInventoryItem(String name, byte[] stats, byte[] icon, int colorMain, int colorAccent1, int colorAccent2) {
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_NAME, name);

@@ -1,5 +1,8 @@
 package edu.uark.csce.mobile.dinogame;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ import android.widget.TextView;
 		public SimpleGeofenceStore mGeofenceStore;
 		public ArrayList<DinoItem> dinoitems;
 		public ProgressDialog pDialog;
-		
+		public InventoryDataSource invDataSource;
 		public String bmpString;
 		public String function;
 		// Creating JSON Parser object
@@ -58,6 +61,14 @@ import android.widget.TextView;
 		private static final String TAG_ITEM_DESC = "itemdesc";
 		private static final String TAG_ITEM_CAP = "itemcap";
 		private static final String TAG_ITEM_IMG = "itemimg";
+		private static final String TAG_ITEM_COL = "color_main";
+		private static final String TAG_ITEM_ACC1 = "color_acc_1";
+		private static final String TAG_ITEM_ACC2 = "color_acc_2";
+		private static final String TAG_ITEM_ATT = "attack";
+		private static final String TAG_ITEM_DEF = "defense";
+		private static final String TAG_ITEM_SPC = "special";
+		
+		
 		
 
 
@@ -71,6 +82,7 @@ import android.widget.TextView;
 			geofences = new ArrayList<SimpleGeofence>();
 			mGeofenceStore = new SimpleGeofenceStore(con);
 			dinoitems = new ArrayList<DinoItem>();
+			invDataSource = new InventoryDataSource(con);
 		}
 		public JSONObject URLRequest(String url, String action, List<NameValuePair> params){
 			return jParser.makeHttpRequest(url, action, params);
@@ -180,11 +192,27 @@ import android.widget.TextView;
 						String name = d.getString(TAG_ITEM_NAME);
 						String desc = d.getString(TAG_ITEM_DESC);
 						String caption = d.getString(TAG_ITEM_CAP);
-						String imgByteArray = d.getString(TAG_ITEM_IMG);
-												
-						bmpString = imgByteArray;
-						//Log.d("bmp strng", bmpString);
-						//get byte array
+						String img_string = d.getString(TAG_ITEM_IMG);
+						int color_main = d.getInt(TAG_ITEM_COL);
+						int acc1 = d.getInt(TAG_ITEM_ACC1);
+						int acc2 = d.getInt(TAG_ITEM_ACC2);
+						int att = d.getInt(TAG_ITEM_ATT);
+						int def = d.getInt(TAG_ITEM_DEF);
+						int spc = d.getInt(TAG_ITEM_SPC);
+						
+						//create inventory item from values
+						//create byte array for stats
+						int[] stats = {att,def,spc};
+						ByteBuffer byteBuffer = ByteBuffer.allocate(stats.length * 4);        
+				        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+				        intBuffer.put(stats);
+				        byte[] array = byteBuffer.array();
+				        byte[] imgByteArray = img_string.getBytes(Charset.forName("UTF-8"));
+
+						InventoryItem item = new InventoryItem(item_id, name, array, imgByteArray, color_main, acc1, acc2);
+						invDataSource.open();
+						invDataSource.insertInventoryItem(item);
+						invDataSource.close();
 					}
 				}
 			}catch (JSONException e){
