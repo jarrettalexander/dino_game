@@ -198,7 +198,8 @@ import android.widget.TextView;
 			param.add(new BasicNameValuePair("user", user_id));
 			//loc is comma delimited
 			param.add(new BasicNameValuePair("location", loc));
-			JSONObject json = URLRequest(ServerUtil.URL_UPDATE_LOC_VIS, "GET", param);
+			Log.d("updating location visited", loc);
+			JSONObject json = URLRequest(ServerUtil.URL_UPDATE_LOC_VIS, "POST", param);
 			try{
 				int success = json.getInt(TAG_SUCCESS);
 				Log.d("updatelocations success", json.toString());
