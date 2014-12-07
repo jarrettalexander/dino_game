@@ -65,9 +65,9 @@ import android.widget.TextView;
 			JSONArray locations = null;
 			JSONArray items = null;
 			
-		public SendToServer(Context con, SummaryActivity act){			
+		public SendToServer(Context con){			
 			context = con;
-			this.activity1 = act;
+			//this.activity1 = act;
 			geofences = new ArrayList<SimpleGeofence>();
 			mGeofenceStore = new SimpleGeofenceStore(con);
 			dinoitems = new ArrayList<DinoItem>();
@@ -241,12 +241,12 @@ import android.widget.TextView;
 				addLocationsToDB();
 				break;
 			case "GetItemsByLocation":
-				Log.d("sum act", "setting tmp");
-				this.activity1.set(bmpString);
+				//add items to local db
+				//this.activity1.set(bmpString);
 				break;
 			}
 			Log.d("sum act", "setting tmp");
-			this.activity1.set(bmpString);
+			//this.activity1.set(bmpString);
 			//t.setText(String.valueOf(geofences.size()));
 			Log.d("post", "returning");
 		}

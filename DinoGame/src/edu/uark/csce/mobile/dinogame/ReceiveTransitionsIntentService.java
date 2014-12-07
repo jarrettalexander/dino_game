@@ -1,5 +1,6 @@
 package edu.uark.csce.mobile.dinogame;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.android.gms.location.Geofence;
@@ -18,12 +19,15 @@ import android.util.Log;
 
 public class ReceiveTransitionsIntentService extends IntentService {
 
+	public SendToServer serverCon;
+	public Context context;
 	public ReceiveTransitionsIntentService() {
 		super("ReceiveTransitionsIntentService");
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		
 		// Check for errors
 		if(LocationClient.hasError(intent)) {
 			int errorCode = LocationClient.getErrorCode(intent);
@@ -61,7 +65,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 store.open();
                 for(int i = 0; i < triggerIds.length; i++) {
                 	store.setLocationToCompleted(triggerIds[i]);
-                }
+                } 
                 store.close();
 
              // Log the transition type and a message
@@ -73,6 +77,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 Log.d(GeofenceUtils.APPTAG,
                         getString(R.string.geofence_transition_notification_text));
 
+            //get items from servr by location entered
+                getItemsByLocation(triggerIds);
+                
             // An invalid transition was reported
             } else {
                 // Always log as an error
@@ -131,6 +138,23 @@ public class ReceiveTransitionsIntentService extends IntentService {
             default:
                 return "Transition Type Unknown";
         }
+    }
+    
+    private void getItemsByLocation(String[] location_ids){
+    	if (serverCon == null){
+    		serverCon = new SendToServer(this);
+    	}
+    	//create comma delimited string of ids
+    	StringBuilder builder = new StringBuilder();
+    	for (String id : location_ids){
+    		builder.append(id);
+    		//if item is not last item, append comma
+    		if(Arrays.asList(location_ids).indexOf(id) < (location_ids.length - 1)){
+    			builder.append(",");
+    		}
+    	}
+
+		serverCon.execute("GetItemsByLocation", builder.toString());
     }
 	
 

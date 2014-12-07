@@ -84,7 +84,7 @@ public class SummaryActivity extends ActionBarActivity {
 		
 		
 		//load locations from background thread
-		serverCon = new SendToServer(this, this);
+		serverCon = new SendToServer(this);
 		serverCon.execute("GetGeofenceLocations");
 		
 		/* testing item grab
