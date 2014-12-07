@@ -215,8 +215,9 @@ import android.widget.TextView;
 			//param1 is comma delimited list of location ids
 			List<NameValuePair> param_list = new ArrayList<NameValuePair>();
 			param_list.add(new BasicNameValuePair("locations", param1));
+			Log.d("getting items at location", param1);
 			//http get request sending location ids
-			JSONObject json = URLRequest(ServerUtil.URL_ITEMS_LOCATION, "POST", param_list);
+			JSONObject json = URLRequest(ServerUtil.URL_ITEMS_LOCATION, "GET", param_list);
 			Log.d("all items", json.toString());
 			//get json object and parse, created dinoitem objects
 			try{
