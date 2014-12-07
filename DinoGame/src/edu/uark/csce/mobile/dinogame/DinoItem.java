@@ -15,47 +15,32 @@ public class DinoItem {
 	private Date mCreatedDate;
 	private int mLevel;
 	private int mExperience;
-	private int mAttack;
-	private int mDefense;
-	private int mSpecial;
-	private byte[] mImage;
+	private byte[] mStats;
+	private int mColor;
+	private int mEquip = -1;
 
 	public DinoItem() {
 		// Initialize first workout
 		mID = 1;
 		mName = "Dino";
-//		mCreatedDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		mCreatedDate = new Date();
 		mLevel = 0;
 		mExperience = 0;
-		mAttack = 0;
-		mDefense = 0;
-		mSpecial = 0;
-		mImage = null;
+		mStats = null;
+		mColor = 0;
+		mEquip = -1;
 	}
 	
-	public DinoItem(long ID, String name, Date date, int level, int experience, int attack, int defense, int special, byte[] image) {
+	public DinoItem(long ID, String name, Date date, int level, int experience, byte[] stats, int color, int equip) {
 		// Initialize first dino
 		mID = ID;
 		mName = name;
 		mCreatedDate = date;
 		mLevel = level;
 		mExperience = experience;
-		mAttack = attack;
-		mDefense = defense;
-		mSpecial = special;
-		mImage = image;
-	}
-	
-	public static void convertList(byte[] asBytes, ArrayList<Double> list) throws IOException {
-
-	    ByteArrayOutputStream bout = new ByteArrayOutputStream();
-	    DataOutputStream dout = new DataOutputStream(bout);
-	    for (double d : list) {
-	        dout.writeDouble(d);
-	    }
-	    dout.close();
-	    asBytes = bout.toByteArray();
+		mStats = stats;
+		mColor = color;
+		mEquip = equip;
 	}
 	
 	@Override
@@ -107,36 +92,28 @@ public class DinoItem {
 		this.mExperience = mExperience;
 	}
 
-	public int getmAttack() {
-		return mAttack;
+	public byte[] getmStats() {
+		return mStats;
 	}
 
-	public void setmAttack(int mAttack) {
-		this.mAttack = mAttack;
+	public void setmStats(byte[] mStats) {
+		this.mStats = mStats;
 	}
 
-	public int getmDefense() {
-		return mDefense;
+	public int getmColor() {
+		return mColor;
 	}
 
-	public void setmDefense(int mDefense) {
-		this.mDefense = mDefense;
+	public void setmColor(int mColor) {
+		this.mColor = mColor;
 	}
 
-	public int getmSpecial() {
-		return mSpecial;
+	public int getmEquip() {
+		return mEquip;
 	}
 
-	public void setmSpecial(int mSpecial) {
-		this.mSpecial = mSpecial;
-	}
-
-	public byte[] getmImage() {
-		return mImage;
-	}
-
-	public void setmImage(byte[] mImage) {
-		this.mImage = mImage;
+	public void setmEquip(int mEquip) {
+		this.mEquip = mEquip;
 	}
 	
 }

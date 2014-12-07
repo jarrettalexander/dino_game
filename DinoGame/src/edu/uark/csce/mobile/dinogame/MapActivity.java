@@ -613,7 +613,7 @@ public class MapActivity extends FragmentActivity
 	}
 	
 	public void viewPlayer(View v) {
-		Intent intent = new Intent(MapActivity.this, PlayerActivity.class);
+		Intent intent = new Intent(MapActivity.this, CharacterActivity.class);
 		startActivity(intent);
 	}
 	

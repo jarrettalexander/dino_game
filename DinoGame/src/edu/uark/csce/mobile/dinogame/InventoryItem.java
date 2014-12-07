@@ -4,12 +4,24 @@ import android.graphics.Bitmap;
 
 public class InventoryItem {
 
-	private Long id;
+	private long id;
 	private String name;
-	private Bitmap icon;
-	private int[] statEffects;
+	private byte[] statEffects;
+	private byte[] icon;
 	
-	public InventoryItem() {}
+	public InventoryItem() {
+		id = 1;
+		name = "Item";
+		statEffects = null;
+		icon = null;
+	}
+	
+	public InventoryItem(long mID, String mName, byte[] mStats, byte[] mIcon) {
+		id = mID;
+		name = mName;
+		statEffects = mStats;
+		icon = mIcon;
+	}
 
 	public Long getId() {
 		return id;
@@ -27,20 +39,20 @@ public class InventoryItem {
 		this.name = name;
 	}
 
-	public Bitmap getIcon() {
-		return icon;
-	}
-
-	public void setIcon(Bitmap icon) {
-		this.icon = icon;
-	}
-
-	public int[] getStatEffects() {
+	public byte[] getStatEffects() {
 		return statEffects;
 	}
 
-	public void setStatEffects(int[] statEffects) {
+	public void setStatEffects(byte[] statEffects) {
 		this.statEffects = statEffects;
+	}
+
+	public byte[] getIcon() {
+		return icon;
+	}
+
+	public void setIcon(byte[] icon) {
+		this.icon = icon;
 	}
 	
 }
