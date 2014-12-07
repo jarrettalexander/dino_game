@@ -70,6 +70,9 @@ public final class GeofenceUtils {
 
     public static final String EXTRA_GEOFENCE_STATUS =
             "edu.uark.csce.mobile.dinogame.EXTRA_GEOFENCE_STATUS";
+    
+    public static final String EXTRA_GEOFENCE_INFO = 
+    		"edu.uark.csce.mobile.dinogame.EXTRA_GEOFENCE_INFO";
 
     /*
      * Keys for flattened geofences stored in SharedPreferences

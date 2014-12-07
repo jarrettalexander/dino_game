@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -82,41 +84,9 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		}
 		expBar = (ProgressBar)findViewById(R.id.expBar);
 		expBar.setProgress(dino.getmExperience());
-		if(dino.getmColor() == 1)
-			color[0] = 204;
-		else if(dino.getmColor() == 2)
-			color[1] = 255;
-		else if(dino.getmColor() == 3)
-			color[2] = 255;
 		
-		// Adjust dino color
-		dinoPic = (ImageView)findViewById(R.id.dinosaur);
-		Drawable d = getResources().getDrawable(R.drawable.dinosaur_bigger);
-	    Bitmap bp = ((BitmapDrawable)d).getBitmap();
-	    int color2 = Color.argb(255, 255, 255, 255);
-	    /*for(int i = 1; i < bp.getHeight(); i++) {
-	    	for(int j = 1; j < bp.getWidth(); j++) {
-	    		if(bp.getPixel(i, j) == color2)
-	    			bp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
-	    	}
-	    }*/
-	    
-//	    bp.setPixel(10, 10, Color.argb(255, color[0], color[1], color[2]));
-//	    bp.setPixel(11, 10, Color.argb(255, color[0], color[1], color[2]));
-//	    
-	    /*bp.setPixel(0, 0, Color.rgb(195, 195, 195));
-	    int color1 = bp.getPixel(10, 10);
-	    int color2 = Color.argb(255, 255, 255, 255);
-	    int color3 = bp.getPixel(11, 10);
-	    int alpha1 = Color.red(color1);
-	    int alpha2 = Color.red(color2);
-	    int alpha3 = Color.red(color3);
-	    Log.e("alpha values", "alpha1 = " + alpha1 + ", alpha2 = " + alpha2 + ", alpha3 = " + alpha3);
-	    if(color1 == color2) {
-	    	Log.e("pixel test", "It's a match!!!"); }
-	    if(color1 == color3) {
-	    	Log.e("color test", "Matches itself!!!");
-	    }*/
+		drawDinoBitmap();
+		
 	}
 	
 	// Button listeners
@@ -179,6 +149,57 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
     public void onDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative button
         // Nothing needs to be done
+    }
+    
+    // Draws a dino character on screen from a bitmap
+    private void drawDinoBitmap() {
+    	
+    	// Get color from dino object
+    	if(dino.getmColor() == 1)
+			color[0] = 204;
+		else if(dino.getmColor() == 2)
+			color[1] = 255;
+		else if(dino.getmColor() == 3)
+			color[2] = 255;
+    	
+    	// Handle resizing options to prevent blurring
+    	Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.dinosaur, options);
+    	
+    	// Create a mutable copy of the bitmap
+		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
+		
+		// Recolor dino based on greyscale image
+	    int color2 = Color.argb(255, 195, 195, 195);
+	    for(int j = 0; j < bp.getHeight(); j++) {
+	    	for(int i = 0; i < bp.getWidth(); i++) {
+	    		if(bp.getPixel(i, j) == color2)
+	    			bp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
+	    	}
+	    }
+	    
+	    // Scale bitmap to appropriate size
+	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * 8, bp.getHeight() * 8, false);
+    		  
+	    // Set ImageView to dino bitmap
+	    dinoPic = (ImageView)findViewById(R.id.dinosaur);
+	    dinoPic.setImageBitmap(bp);
+	    
+	    // Unused alpha stuff
+	    /*bp.setPixel(0, 0, Color.rgb(195, 195, 195));
+	    int color1 = bp.getPixel(10, 10);
+	    int color2 = Color.argb(255, 255, 255, 255);
+	    int color3 = bp.getPixel(11, 10);
+	    int alpha1 = Color.red(color1);
+	    int alpha2 = Color.red(color2);
+	    int alpha3 = Color.red(color3);
+	    Log.e("alpha values", "alpha1 = " + alpha1 + ", alpha2 = " + alpha2 + ", alpha3 = " + alpha3);
+	    if(color1 == color2) {
+	    	Log.e("pixel test", "It's a match!!!"); }
+	    if(color1 == color3) {
+	    	Log.e("color test", "Matches itself!!!");
+	    }*/
     }
 
 }
