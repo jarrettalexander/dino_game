@@ -19,9 +19,11 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +46,7 @@ import android.widget.TextView;
 		public ArrayList<InventoryItem> invitems;
 		public String bmpString;
 		public String function;
+		private String user_id;
 		// Creating JSON Parser object
 		JSONParser jParser = new JSONParser();
 		// JSON Node names
@@ -77,7 +80,7 @@ import android.widget.TextView;
 			JSONArray locations = null;
 			JSONArray items = null;
 			
-		public SendToServer(Context con){			
+		public SendToServer(Context con, String id){			
 			context = con;
 			//this.activity1 = act;
 			geofences = new ArrayList<SimpleGeofence>();
@@ -85,12 +88,17 @@ import android.widget.TextView;
 			dinoitems = new ArrayList<DinoItem>();
 			invDataSource = new InventoryDataSource(con);
 			invitems = new ArrayList<InventoryItem>();
+			user_id = id;
+			//getIdFromPreference();
 		}
 		public JSONObject URLRequest(String url, String action, List<NameValuePair> params){
 			return jParser.makeHttpRequest(url, action, params);
 		}
-		
-		
+
+		public void getIdFromPreference(){
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+			user_id = preferences.getString("android_id", "");
+		}
 		public String getBmp(){
 			return bmpString;
 		}
@@ -122,6 +130,7 @@ import android.widget.TextView;
 				
 			// Building Parameters
 						List<NameValuePair> params = new ArrayList<NameValuePair>();
+						params.add(new BasicNameValuePair("user", user_id));
 						/////////////////////////////////////////
 						//params can add in currently stored locations and send to server to filter these locations
 						/////////////////////////////////////////
@@ -184,13 +193,30 @@ import android.widget.TextView;
 						return "success";
 		}
 		
+		public void updateLocationsVisited(String loc){
+			List<NameValuePair> param = new ArrayList<NameValuePair>();
+			param.add(new BasicNameValuePair("user", user_id));
+			//loc is comma delimited
+			param.add(new BasicNameValuePair("location", loc));
+			JSONObject json = URLRequest(ServerUtil.URL_UPDATE_LOC_VIS, "GET", param);
+			try{
+				int success = json.getInt(TAG_SUCCESS);
+				Log.d("updatelocations success", json.toString());
+
+				if (success == 1){
+					//update location complete local db
+				}
+			}catch(JSONException e){
+				
+			}
+		}
 		public String GetItemsByLocation(String param1){
 			String result = "";
 			//param1 is comma delimited list of location ids
 			List<NameValuePair> param_list = new ArrayList<NameValuePair>();
 			param_list.add(new BasicNameValuePair("locations", param1));
 			//http get request sending location ids
-			JSONObject json = URLRequest(ServerUtil.URL_ITEMS_LOCATION, "GET", param_list);
+			JSONObject json = URLRequest(ServerUtil.URL_ITEMS_LOCATION, "POST", param_list);
 			Log.d("all items", json.toString());
 			//get json object and parse, created dinoitem objects
 			try{
@@ -240,11 +266,11 @@ import android.widget.TextView;
 		protected void onPreExecute() {
 			super.onPreExecute();
 			Log.d("preex", "start");
-			pDialog = new ProgressDialog(context);
+			/*pDialog = new ProgressDialog(context);
 			pDialog.setMessage("Loading item locations. Please wait...");
 			pDialog.setIndeterminate(false);
 			pDialog.setCancelable(false);
-			pDialog.show();
+			pDialog.show();*/
 			
 		}
 
@@ -263,6 +289,7 @@ import android.widget.TextView;
 				break;
 			case "GetItemsByLocation":
 				result = GetItemsByLocation(args[1]);
+				updateLocationsVisited(args[1]);
 				break;
 			}
 			return result;
@@ -274,7 +301,7 @@ import android.widget.TextView;
 		protected void onPostExecute(String file_url) {
 			Log.d("post","start");
 			// dismiss the dialog after getting all products
-			pDialog.dismiss();
+			//pDialog.dismiss();
 			switch (function){
 			case "GetGeofenceLocations":
 				//update local database

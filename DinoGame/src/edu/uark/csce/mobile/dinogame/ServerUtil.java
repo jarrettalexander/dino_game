@@ -11,7 +11,7 @@ public class ServerUtil {
 	//PROBLY dont need bottom three
 	public static final String URL_ITEMS_LOCATION = SERVER_ADDR + "get_item_by_location.php";
 	
-	public static final String URL_DELETE_PRODUCT = SERVER_ADDR + "delete_product.php";
+	public static final String URL_UPDATE_LOC_VIS = SERVER_ADDR + "location_visited.php";
 	
 	public static final String URL_CREATE_PRODUCT = SERVER_ADDR + "create_product.php";
 	
