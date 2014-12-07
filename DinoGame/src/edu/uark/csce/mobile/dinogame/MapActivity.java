@@ -187,7 +187,7 @@ public class MapActivity extends FragmentActivity
 		locationManager.requestLocationUpdates(provider, 10000L, 0f, locationListener);*/
 		
 		// Testing
-		addTestGeofence();
+		//addTestGeofence();
 	}
 
 	@Override
@@ -510,9 +510,13 @@ public class MapActivity extends FragmentActivity
     	
     	// Using SQLite Database...
     	mSimpleGeofenceList = mGeofenceStorage.getAllGeofences();
-    	if(mSimpleGeofenceList.get(0) != null) {
+    	Log.d("count", String.valueOf(mSimpleGeofenceList.size()));
+    	/*if(mSimpleGeofenceList.get(0) != null) {
     		mCurrentGeofence = mSimpleGeofenceList.get(0);
     		mGeofenceList.add(mCurrentGeofence.toGeofence());
+    	}*/
+    	for (SimpleGeofence fence : mSimpleGeofenceList){
+    		mGeofenceList.add(fence.toGeofence());
     	}
     	
     	addGeofence();
@@ -520,7 +524,7 @@ public class MapActivity extends FragmentActivity
     
     private void updateMap() {
     	
-    	if(mCurrentGeofence != null) {
+    	/*if(mCurrentGeofence != null) {
     		LatLng location = new LatLng(mCurrentGeofence.getLatitude(), mCurrentGeofence.getLongitude());
     		mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, 16);
@@ -531,6 +535,25 @@ public class MapActivity extends FragmentActivity
     		CircleOptions circleOptions = new CircleOptions()
     			.center(location)
     			.radius(mCurrentGeofence.getRadius())
+    			.fillColor(0x40ff0000)
+    			.strokeColor(Color.TRANSPARENT)
+    			.strokeWidth(2);
+    		
+    		Circle circle = mMap.addCircle(circleOptions);
+    	}*/
+    	mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+    	for (SimpleGeofence fence : mSimpleGeofenceList){
+    		Log.d("adding geofence...", fence.toString());
+    		LatLng location = new LatLng(fence.getLatitude(), fence.getLongitude());
+    		
+    		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, 16);
+    		mMap.animateCamera(update);
+    		mMap.addMarker(new MarkerOptions().position(location).title("Geofence is here! " + fence.getId()));
+    		
+    		// Add circle
+    		CircleOptions circleOptions = new CircleOptions()
+    			.center(location)
+    			.radius(fence.getRadius())
     			.fillColor(0x40ff0000)
     			.strokeColor(Color.TRANSPARENT)
     			.strokeWidth(2);

@@ -140,9 +140,8 @@ public class SummaryActivity extends ActionBarActivity {
 	
 	public void addLocationsToDB(){
 		//adds each geofence object to local db
-		Log.d("add", "opening");
 		mGeofenceStore.open();
-		Log.d("add", "opened");
+		Log.d("adding locations", String.valueOf(geofences.size()) + " locations");
 		for (SimpleGeofence fence : geofences){
 			mGeofenceStore.createGeofence(fence);
 		}
