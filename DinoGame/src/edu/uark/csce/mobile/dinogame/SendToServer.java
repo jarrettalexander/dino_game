@@ -206,9 +206,16 @@ import android.widget.TextView;
 
 				if (success == 1){
 					//update location complete local db
+					mGeofenceStore.open();
+					List<String> locs = Arrays.asList(loc.split("\\s*,\\s*"));
+					for (String location : locs){
+						mGeofenceStore.setLocationToCompleted(location);
+						Log.d("marking as completed", "location " + location);
+					}
+					mGeofenceStore.close();
 				}
 			}catch(JSONException e){
-				
+				e.printStackTrace();
 			}
 		}
 		public String GetItemsByLocation(String param1){
