@@ -13,14 +13,18 @@ import org.json.JSONObject;
 import android.support.v7.app.ActionBarActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -32,25 +36,17 @@ public class SummaryActivity extends ActionBarActivity {
 	
 	// Database
 	private DinosDataSource datasource;
-	
+	private static String tmp;
+	private static ImageView img;
 	public ArrayList<SimpleGeofence> geofences;
 	public SimpleGeofenceStore mGeofenceStore;
 	public ProgressDialog pDialog;
 	// Creating JSON Parser object
 	JSONParser jParser = new JSONParser();
-	// JSON Node names
-	private static final String TAG_SUCCESS = "success";
-	private static final String TAG_LOCATIONS = "locations";
-	private static final String TAG_LONG = "longitude";
-	private static final String TAG_LAT = "latitude";
-	private static final String TAG_ID = "lid";
-	private static final String TAG_RAD = "radius";
-	private static final String TAG_EXP = "expiration";
-	private static final String TAG_TRAN = "transition";
-	private static final String TAG_ITEM = "item";
-
 	public TextView t;
 
+	//server variable for sending
+	private SendToServer serverCon;
 	// products JSONArray
 		JSONArray locations = null;
 	
@@ -85,11 +81,21 @@ public class SummaryActivity extends ActionBarActivity {
 		geofences = new ArrayList<SimpleGeofence>();
 		mGeofenceStore = new SimpleGeofenceStore(this);
 		t = (TextView) findViewById(R.id.textView1);
+		
+		
 		//load locations from background thread
-		new LoadLocations().execute();
+		serverCon = new SendToServer(this, this);
+		serverCon.execute("GetGeofenceLocations");
 		
+		/* testing item grab
+		Log.d("executing...","getitemsbylocation");
+		img = (ImageView) findViewById(R.id.imageView1);
+		serverCon.execute("GetItemsByLocation", "1");
+		*/
 		
-		//updatelocal db with geofence objects
+
+		
+	
 	}
 
 	@Override
@@ -137,112 +143,16 @@ public class SummaryActivity extends ActionBarActivity {
 		startActivity(intent);
 	}
 
+
+	public void set(String t){
+		//method for converting string to bytearray to img
+		tmp = t;
+		
+		Log.d("tmp", tmp);
+		byte[] data = Base64.decode(tmp, Base64.DEFAULT);
+		Bitmap bmp = BitmapFactory.decodeByteArray(data,0, data.length);
+		img = (ImageView) findViewById(R.id.imageView1);
+		img.setImageBitmap(bmp);
+	}
 	
-	public void addLocationsToDB(){
-		//adds each geofence object to local db
-		mGeofenceStore.open();
-		Log.d("adding locations", String.valueOf(geofences.size()) + " locations");
-		for (SimpleGeofence fence : geofences){
-			mGeofenceStore.createGeofence(fence);
-		}
-		mGeofenceStore.close();
-	}
-	/**
-	 * Background Async Task to Load all product by making HTTP Request
-	 * */
-	class LoadLocations extends AsyncTask<String, String, String> {
-
-		/**
-		 * Before starting background thread Show Progress Dialog
-		 * */
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			pDialog = new ProgressDialog(SummaryActivity.this);
-			pDialog.setMessage("Loading item locations. Please wait...");
-			pDialog.setIndeterminate(false);
-			pDialog.setCancelable(false);
-			pDialog.show();
-		}
-
-		/**
-		 * getting All products from url
-		 * */
-		protected String doInBackground(String... args) {
-			// Building Parameters
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			/////////////////////////////////////////
-			//params can add in currently stored locations and send to server to filter these locations
-			/////////////////////////////////////////
-			// getting JSON string from URL
-			
-			JSONObject json = jParser.makeHttpRequest(
-					ServerUtil.URL_ALL_LOCATIONS, "POST", params);
-
-			// Check your log cat for JSON response
-			Log.d("All Locations: ", json.toString());
-
-			try {
-				// Checking for SUCCESS TAG
-				int success = json.getInt(TAG_SUCCESS);
-				
-				if (success == 1) {
-					// products found
-					// Getting Array of Products
-					locations = json.getJSONArray(TAG_LOCATIONS);
-					Log.d("background", "got locations");
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-					
-					// looping through All Products
-					Log.d("loop", "looping...");
-					for (int i = 0; i < locations.length(); i++) {
-						JSONObject c = locations.getJSONObject(i);
-						
-						// Storing each json item in variable
-						double lon = Double.valueOf(c.getString(TAG_LONG));
-						double lat = Double.valueOf(c.getString(TAG_LAT));
-						String lid = c.getString(TAG_ID);
-						float rad = Float.valueOf(c.getString(TAG_RAD));
-						Date exp_date = new Date();
-						try {
-							exp_date = format.parse(c.getString(TAG_EXP));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						int trn = Integer.valueOf(c.getString(TAG_TRAN));
-						int itm = Integer.valueOf(c.getString(TAG_ITEM));
-						long exp = exp_date.getTime();
-						boolean cmp = false;
-						// creating new fenc object
-						
-						SimpleGeofence fence = new SimpleGeofence(lid, lat, lon, rad, exp, 1 | 2, itm, cmp);
-
-						// adding fence to ArrayList
-						geofences.add(fence);
-					}
-				} else {
-					// no new locations found
-					
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			Log.d("doinback", String.valueOf(geofences.size()));
-			return null;
-		}
-
-		/**
-		 * After completing background task Dismiss the progress dialog
-		 * **/
-		protected void onPostExecute(String file_url) {
-			// dismiss the dialog after getting all products
-			pDialog.dismiss();
-			//update local database
-			addLocationsToDB();
-			//t.setText(String.valueOf(geofences.size()));
-			Log.d("post", "returning");
-		}
-
-	}
 }
