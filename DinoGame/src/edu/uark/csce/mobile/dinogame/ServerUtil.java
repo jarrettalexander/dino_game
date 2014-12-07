@@ -9,7 +9,7 @@ public class ServerUtil {
 	public static final String URL_LOCATION_DETAILS = SERVER_ADDR + "get_product_details.php";
 
 	//PROBLY dont need bottom three
-	public static final String URL_UPDATE_PRODUCT = SERVER_ADDR + "update_product.php";
+	public static final String URL_ITEMS_LOCATION = SERVER_ADDR + "get_item_by_location.php";
 	
 	public static final String URL_DELETE_PRODUCT = SERVER_ADDR + "delete_product.php";
 	

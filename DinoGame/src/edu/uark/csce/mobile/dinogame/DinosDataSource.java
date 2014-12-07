@@ -26,7 +26,9 @@ public class DinosDataSource {
 			MySQLiteHelper.COLUMN_LEVEL,
 			MySQLiteHelper.COLUMN_EXP,
 			MySQLiteHelper.COLUMN_STATS,
-			MySQLiteHelper.COLUMN_COLOR,
+			MySQLiteHelper.COLUMN_COLOR_ONE,
+			MySQLiteHelper.COLUMN_COLOR_TWO,
+			MySQLiteHelper.COLUMN_COLOR_THREE,
 			MySQLiteHelper.COLUMN_EQUIP};
 	private String listSort = MySQLiteHelper.COLUMN_DATE + " ASC";
 
@@ -42,14 +44,16 @@ public class DinosDataSource {
 		dbHelper.close();
 	}
 
-	public DinoItem createDinoItem(String name, Date date, int level, int experience, byte[] stats, int color, int equipID) {
+	public DinoItem createDinoItem(String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, int equipID) {
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_NAME, name);
 		values.put(MySQLiteHelper.COLUMN_DATE, new SimpleDateFormat("yyyy-MM-dd").format(date));
 		values.put(MySQLiteHelper.COLUMN_LEVEL, level);
 		values.put(MySQLiteHelper.COLUMN_EXP, experience);
 		values.put(MySQLiteHelper.COLUMN_STATS, stats);
-		values.put(MySQLiteHelper.COLUMN_COLOR, color);
+		values.put(MySQLiteHelper.COLUMN_COLOR_ONE, colorMain);
+		values.put(MySQLiteHelper.COLUMN_COLOR_TWO, colorAccent1);
+		values.put(MySQLiteHelper.COLUMN_COLOR_THREE, colorAccent2);
 		if(equipID != -1) {
 			values.put(MySQLiteHelper.COLUMN_EQUIP, equipID);
 		}
@@ -96,9 +100,11 @@ public class DinosDataSource {
 		dino.setmLevel(cursor.getInt(3));
 		dino.setmExperience(cursor.getInt(4));
 		dino.setmStats(cursor.getBlob(5));
-		dino.setmColor(cursor.getInt(6));
+		dino.setColorMain(cursor.getInt(6));
+		dino.setColorAccent1(cursor.getInt(7));
+		dino.setColorAccent2(cursor.getInt(8));
 		if(cursor.getInt(7) != -1) {
-			dino.setmEquip(cursor.getInt(7));
+			dino.setmEquip(cursor.getInt(9));
 		}
 		return dino;
 	}

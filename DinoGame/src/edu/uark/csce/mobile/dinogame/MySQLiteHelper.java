@@ -18,7 +18,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 //	public static final String COLUMN_ATTACK = "attack";
 //	public static final String COLUMN_DEFENSE = "defense";
 //	public static final String COLUMN_SPECIAL = "special";
-	public static final String COLUMN_COLOR = "color";
+	public static final String COLUMN_COLOR_ONE = "color_one";
+	public static final String COLUMN_COLOR_TWO = "color_two";
+	public static final String COLUMN_COLOR_THREE = "color_three";
 	public static final String COLUMN_EQUIP = "equipment";
 	
 	// Item table
@@ -26,30 +28,36 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ITEM = "_id";
 //	public static final String COLUMN_NAME = "name";	// just using one from dino table
 	public static final String COLUMN_ICON = "icon";
+	public static final String COLUMN_ITEM_COLOR_ONE = "color_one";
+	public static final String COLUMN_ITEM_COLOR_TWO = "color_two";
+	public static final String COLUMN_ITEM_COLOR_THREE = "color_three";
 	public static final String COLUMN_STAT = "stats";
 
 	private static final String DATABASE_NAME = "characters.db";
 	private static final int DATABASE_VERSION = 1;
 
 	// Database creation sql statements
-	private static final String DATABASE_CREATE1 = "create table "
-			+ TABLE_DINOS + "(" + COLUMN_ID
-			+ " integer primary key autoincrement, " + COLUMN_NAME
-			+ " text not null, " + COLUMN_DATE
-			+ " date not null, " + COLUMN_LEVEL
-			+ " integer not null, " + COLUMN_EXP
-			+ " integer not null, " + COLUMN_STATS
-			+ " blob not null, " + COLUMN_COLOR
-			+ " integer not null, " + COLUMN_EQUIP
-			+ " integer,"
-			+ " FOREIGN KEY ("+COLUMN_EQUIP+") REFERENCES "+TABLE_ITEMS+" ("+COLUMN_ITEM+"));";
+	private static final String DATABASE_CREATE1 = "create table " + TABLE_DINOS + "(" + 
+			COLUMN_ID + " integer primary key autoincrement, " + 
+			COLUMN_NAME + " text not null, " + 
+			COLUMN_DATE + " date not null, " + 
+			COLUMN_LEVEL + " integer not null, " + 
+			COLUMN_EXP + " integer not null, " + 
+			COLUMN_STATS + " blob not null, " + 
+			COLUMN_COLOR_ONE + " integer not null, " +
+			COLUMN_COLOR_TWO + " integer not null, " +
+			COLUMN_COLOR_THREE + " integer not null, " +
+			COLUMN_EQUIP + " integer, " + 
+			"FOREIGN KEY ("+COLUMN_EQUIP+") REFERENCES "+TABLE_ITEMS+" ("+COLUMN_ITEM+"));";
 	
-	private static final String DATABASE_CREATE2 = "create table "
-			+ TABLE_ITEMS + "(" + COLUMN_ITEM
-			+ " integer primary key autoincrement, " + COLUMN_NAME
-			+ " text not null, " + COLUMN_ICON
-			+ " blob not null, " + COLUMN_STAT
-			+ " blob not null);";
+	private static final String DATABASE_CREATE2 = "create table " + TABLE_ITEMS + "(" + 
+			COLUMN_ITEM + " integer primary key autoincrement, " + 
+			COLUMN_NAME + " text not null, " + 
+			COLUMN_ICON + " blob not null, " +
+			COLUMN_ITEM_COLOR_ONE + " integer not null, " +
+			COLUMN_ITEM_COLOR_TWO + " integer not null, " +
+			COLUMN_ITEM_COLOR_THREE + " integer not null, " +
+			COLUMN_STAT + " blob not null);";
 
 
 	public MySQLiteHelper(Context context) {
