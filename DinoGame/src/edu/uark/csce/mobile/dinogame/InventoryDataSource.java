@@ -41,10 +41,11 @@ public class InventoryDataSource {
 		dbHelper.close();
 	}
 	public InventoryItem insertInventoryItem(InventoryItem item){
-		return this.createInventoryItem(item.getName(), item.getStatEffects(), item.getIcon(), item.getColorMain(), item.getColorAccent1(), item.getColorAccent2());
+		return this.createInventoryItem(item.getId(), item.getName(), item.getStatEffects(), item.getIcon(), item.getColorMain(), item.getColorAccent1(), item.getColorAccent2());
 	}
-	public InventoryItem createInventoryItem(String name, byte[] stats, byte[] icon, int colorMain, int colorAccent1, int colorAccent2) {
+	public InventoryItem createInventoryItem(long id, String name, byte[] stats, byte[] icon, int colorMain, int colorAccent1, int colorAccent2) {
 		ContentValues values = new ContentValues();
+		values.put(MySQLiteHelper.COLUMN_ITEM, id);
 		values.put(MySQLiteHelper.COLUMN_NAME, name);
 		values.put(MySQLiteHelper.COLUMN_STAT, stats);
 		values.put(MySQLiteHelper.COLUMN_ICON, icon);

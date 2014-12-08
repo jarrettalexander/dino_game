@@ -28,10 +28,10 @@ public class ItemActivity extends Activity {
 		datasource = new InventoryDataSource(this);
 		datasource.open();
 		
-		// Store the dinos in list
+		// Store the items in list
 		invItems = datasource.getAllItems();
 		
-		// Retrieve dino info
+		// Retrieve item info
 		Intent intent = getIntent();
 		position = intent.getIntExtra(InventoryActivity.EXTRA_POSITION, 0);
 		item = invItems.get(position);

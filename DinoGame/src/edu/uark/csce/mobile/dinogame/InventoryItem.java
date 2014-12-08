@@ -88,5 +88,9 @@ public class InventoryItem {
 		this.colorAccent2 = color;
 	}
 	
+	@Override
+	public String toString() {
+		return this.name;
+	}
 	
 }
