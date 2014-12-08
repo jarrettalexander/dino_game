@@ -108,7 +108,11 @@ import android.widget.TextView;
 			}
 			invDataSource.open();
 			for (InventoryItem i : invitems){
+				try{
 				invDataSource.insertInventoryItem(i);
+				}catch(Exception e){
+					Log.d("adding item to local", "item " + i.getName() + " exists");
+				}
 			}
 			invDataSource.close();
 			invitems.clear();
@@ -121,7 +125,12 @@ import android.widget.TextView;
 			mGeofenceStore.open();
 			Log.d("adding locations", String.valueOf(geofences.size()) + " locations");
 			for (SimpleGeofence fence : geofences){
-				mGeofenceStore.createGeofence(fence);
+				try{
+					mGeofenceStore.createGeofence(fence);
+				}catch(Exception e){
+					
+					e.printStackTrace();
+				}
 			}
 			mGeofenceStore.close();
 			geofences.clear();
