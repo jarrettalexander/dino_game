@@ -10,6 +10,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,8 +22,8 @@ public class CreateDinoActivity extends Activity {
 	
 	// Edit fields
 	private EditText nameText;
-	private RadioGroup colorChoice;
-	private RadioButton choice;
+	//private RadioGroup colorChoice;
+	//private RadioButton choice;
 	
 	private TextView colorTextView1;
 	private TextView colorTextView2;
@@ -58,14 +59,14 @@ public class CreateDinoActivity extends Activity {
 		
 		name = null;
 		bytStats = null;
-		colorMain = 0xFF0000;
-		colorAccent1 = 0x00FF00;
-		colorAccent2 = 0x0000FF;
+		colorMain = 0xFFFF0000;
+		colorAccent1 = 0xFF00FF00;
+		colorAccent2 = 0xFF0000FF;
 		
 		// Register text fields
 		nameText = (EditText)findViewById(R.id.nameField);
-		colorChoice = (RadioGroup)findViewById(R.id.colorField);
-		choice = (RadioButton)findViewById(colorChoice.getCheckedRadioButtonId());
+		//colorChoice = (RadioGroup)findViewById(R.id.colorField);
+		//choice = (RadioButton)findViewById(colorChoice.getCheckedRadioButtonId());
 		
 		colorTextView1 = (TextView)findViewById(R.id.textColor1);
 		colorTextView2 = (TextView)findViewById(R.id.textColor2);
@@ -163,6 +164,8 @@ public class CreateDinoActivity extends Activity {
 //			color = 2;
 //		else if(colorText.equalsIgnoreCase("green"))
 //			color = 3;
+		
+		//Log.d(GeofenceUtils.APPTAG, "colors are: " + Integer.toHexString(colorMain) + ", " + Integer.toHexString(colorAccent1) + ", " + Integer.toHexString(colorAccent2));
 		
 		bytStats = convertIntArray(stats);
 		DinoItem newDino = datasource.createDinoItem(name, 

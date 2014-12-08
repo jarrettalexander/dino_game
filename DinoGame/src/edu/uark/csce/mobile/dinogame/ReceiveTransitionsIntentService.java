@@ -148,8 +148,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
     
     private void getItemsByLocation(String[] location_ids){
+    	PreferencesActivity prefs = new PreferencesActivity(this);
     	if (serverCon == null){
-    		serverCon = new SendToServer(this, "22");
+    		serverCon = new SendToServer(this, prefs.getId());
     	}
     	//create comma delimited string of ids
     	StringBuilder builder = new StringBuilder();
@@ -160,6 +161,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     			builder.append(",");
     		}
     	}
+    	
     	serverCon.function = "GetItemsByLocation";
 		serverCon.execute("GetItemsByLocation", builder.toString());
     }
