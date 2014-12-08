@@ -120,6 +120,24 @@ public class SimpleGeofenceStore {
     }
     
     /**
+     * Returns all SimpleGeofence objects stored in the locations database that aren't marked as completed
+     */
+    public ArrayList<SimpleGeofence> getAllUncompletedGeofences() {
+    	ArrayList<SimpleGeofence> geofences = new ArrayList<SimpleGeofence>();
+		
+		Cursor cursor = db.query(LocationSQLiteHelper.LOCATIONS_TABLE_NAME, allColumns, LocationSQLiteHelper.LOCATIONS_COLUMN_COMPLETED + " != 1", null, null, null, LocationSQLiteHelper.LOCATIONS_COLUMN_ID + " DESC");
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()) {
+			SimpleGeofence geofence = cursorToSimpleGeofence(cursor);
+			geofences.add(geofence);
+			cursor.moveToNext();
+		}
+		
+		cursor.close();
+		return geofences;
+    }
+    
+    /**
      * Sets the Completed flag to True for the Geofence in the local database with the associated ID.
      * 
      * @param id The ID of the geofence to set Completed to true

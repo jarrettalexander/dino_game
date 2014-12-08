@@ -483,7 +483,7 @@ public class MapActivity extends FragmentActivity
     	//mGeofenceList.add(mCurrentGeofence.toGeofence());
     	
     	// Using SQLite Database...
-    	mSimpleGeofenceList = mGeofenceStorage.getAllGeofences();
+    	mSimpleGeofenceList = mGeofenceStorage.getAllUncompletedGeofences();
     	Log.d("count", String.valueOf(mSimpleGeofenceList.size()));
     	/*if(mSimpleGeofenceList.get(0) != null) {
     		mCurrentGeofence = mSimpleGeofenceList.get(0);
