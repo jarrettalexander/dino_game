@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dip" 
+    android:orientation="vertical">
+    
+    <TextView
+        android:id="@+id/rowName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" 
+        android:paddingLeft="20dip"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
+        android:textColor="#000000"
+        android:paddingTop="5dip"/>
+    <TextView
+        android:id="@+id/rowLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:textSize="12sp"
+        android:textColor="#000000"
+        android:paddingRight="20dip"
+        android:paddingTop="5dip"
+        />
+    <TextView
+        android:id="@+id/rowExp"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rowLevel"
+        android:layout_alignParentEnd="true"
+        android:paddingTop="5sp"
+        android:textSize="12sp"
+        android:textColor="#000000"
+        android:paddingRight="20dip"        
+       />
+
+</RelativeLayout>

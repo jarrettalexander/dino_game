@@ -9,11 +9,13 @@ import java.util.List;
 import yuku.ambilwarna.AmbilWarnaDialog;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -24,7 +26,7 @@ public class CreateDinoActivity extends Activity {
 	private EditText nameText;
 	//private RadioGroup colorChoice;
 	//private RadioButton choice;
-	
+	private LinearLayout layout;
 	private TextView colorTextView1;
 	private TextView colorTextView2;
 	private TextView colorTextView3;
@@ -63,16 +65,14 @@ public class CreateDinoActivity extends Activity {
 		colorAccent1 = 0xFF00FF00;
 		colorAccent2 = 0xFF0000FF;
 		
+		layout = (LinearLayout)findViewById(R.id.linearLayout1);
 		// Register text fields
 		nameText = (EditText)findViewById(R.id.nameField);
 		//colorChoice = (RadioGroup)findViewById(R.id.colorField);
 		//choice = (RadioButton)findViewById(colorChoice.getCheckedRadioButtonId());
 		
-		colorTextView1 = (TextView)findViewById(R.id.textColor1);
-		colorTextView2 = (TextView)findViewById(R.id.textColor2);
-		colorTextView3 = (TextView)findViewById(R.id.textColor3);
-		
 		buttonChooseColor1 = (Button)findViewById(R.id.buttonChooseColor1);
+		buttonChooseColor1.setBackgroundColor(colorMain);
 		buttonChooseColor1.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -81,6 +81,7 @@ public class CreateDinoActivity extends Activity {
 		});
 		
 		buttonChooseColor2 = (Button)findViewById(R.id.buttonChooseColor2);
+		buttonChooseColor2.setBackgroundColor(colorAccent1);
 		buttonChooseColor2.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -89,6 +90,7 @@ public class CreateDinoActivity extends Activity {
 		});
 		
 		buttonChooseColor3 = (Button)findViewById(R.id.buttonChooseColor3);
+		buttonChooseColor3.setBackgroundColor(colorAccent2);
 		buttonChooseColor3.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -106,7 +108,7 @@ public class CreateDinoActivity extends Activity {
 				//Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
 				
 				colorMain = col;
-				colorTextView1.setText(Integer.toString(col));
+				buttonChooseColor1.setBackgroundColor(col);
 			}
 
 			@Override
@@ -124,7 +126,7 @@ public class CreateDinoActivity extends Activity {
 				//Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
 				
 				colorAccent1 = col;
-				colorTextView2.setText(Integer.toString(col));
+				buttonChooseColor2.setBackgroundColor(col);
 			}
 
 			@Override
@@ -142,7 +144,7 @@ public class CreateDinoActivity extends Activity {
 				//Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
 				
 				colorAccent2 = col;
-				colorTextView3.setText(Integer.toString(col));
+				buttonChooseColor3.setBackgroundColor(col);
 			}
 
 			@Override
@@ -156,7 +158,13 @@ public class CreateDinoActivity extends Activity {
 	public void saveDino(View v) throws IOException {
 		Intent intent = new Intent(CreateDinoActivity.this, SummaryActivity.class);
 		// Set character values
-		name = nameText.getText().toString();
+		try{
+			name = nameText.getText().toString();
+		}catch(Exception e){
+			e.printStackTrace();
+			name="didntwork";
+		}
+		
 //		colorText = choice.getText().toString();
 //		if(colorText.equalsIgnoreCase("red"))
 //			color = 1;

@@ -69,7 +69,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 			equipped = false;
 		
 		// Adjust Views based on data
-		nameText = (TextView)findViewById(R.id.textView2);
+		nameText = (TextView)findViewById(R.id.textViewNoItems);
 		nameText.setText(dino.getmName());
 		attackText = (TextView)findViewById(R.id.textView4);
 		attackText.setText(Integer.toString(stats.get(0)));

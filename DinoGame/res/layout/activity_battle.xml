@@ -1,127 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:background="#669900"
+        android:gravity="center_vertical|center_horizontal"
+        android:padding="10dp"
         android:text="BATTLE!"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
 
-    <ImageView
-        android:id="@+id/playerDino"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/aiDino"
-        android:layout_toLeftOf="@+id/textView1"
-        android:src="@drawable/dinosaur_bigger" />
-
-    <ImageView
-        android:id="@+id/aiDino"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_below="@+id/textView1"
-        android:layout_marginTop="39dp"
-        android:layout_toRightOf="@+id/textView1"
-        android:src="@drawable/dinosaur_bigger" />
+        android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/health"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/playerDino"
-        android:layout_marginTop="20dp"
-        android:text="HP:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <Button
+            android:id="@+id/flee"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:onClick="forfeit"
+            android:text="Flee" />
 
-    <TextView
-        android:id="@+id/playerHP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/health"
-        android:layout_alignBottom="@+id/health"
-        android:layout_alignRight="@+id/playerDino"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <Button
+            android:id="@+id/special"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:onClick="special"
+            android:text="Special" />
 
-    <TextView
-        android:id="@+id/aiHP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/playerHP"
-        android:layout_alignRight="@+id/aiDino"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <Button
+            android:id="@+id/block"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/special"
+            android:layout_alignParentRight="true"
+            android:onClick="block"
+            android:text="Block" />
 
-    <TextView
-        android:id="@+id/specialText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/health"
-        android:layout_marginTop="20dp"
-        android:text="Special:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <Button
+            android:id="@+id/attack"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/block"
+            android:layout_alignBottom="@+id/block"
+            android:layout_alignParentLeft="true"
+            android:onClick="attack"
+            android:text="Attack" />
 
-    <TextView
-        android:id="@+id/playerSP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/specialText"
-        android:layout_alignRight="@+id/playerHP"
-        android:text="0/0"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/aiSP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/actionSep"
+            android:layout_alignParentRight="true"
+            android:padding="15dp"
+            android:text="0/0"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/aiSP"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/playerSP"
-        android:layout_alignRight="@+id/aiHP"
-        android:text="0/0"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/playerSP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/actionSep"
+            android:layout_alignRight="@+id/attack"
+            android:padding="15dp"
+            android:text="0/0"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/attack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/specialText"
-        android:layout_marginTop="20dp"
-        android:onClick="attack"
-        android:text="Attack" />
+        <TextView
+            android:id="@+id/specialText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/playerSP"
+            android:layout_alignBottom="@+id/playerSP"
+            android:layout_alignParentLeft="true"
+            android:padding="15dp"
+            android:text="Special:"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/block"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/attack"
-        android:layout_centerHorizontal="true"
-        android:onClick="block"
-        android:text="Block" />
+        <TextView
+            android:id="@+id/aiHP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/playerHP"
+            android:layout_alignBottom="@+id/playerHP"
+            android:layout_alignLeft="@+id/aiSP"
+            android:padding="15dp"
+            android:text="0"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/special"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/block"
-        android:layout_alignBottom="@+id/block"
-        android:layout_alignParentRight="true"
-        android:onClick="special"
-        android:text="Special" />
+        <View
+            android:id="@+id/actionSepHp"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_above="@+id/playerSP"
+            android:layout_alignParentLeft="true"
+            android:background="#d3d3d3" />
 
-    <Button
-        android:id="@+id/flee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:onClick="forfeit"
-        android:text="Flee!" />
+        <View
+            android:id="@+id/actionSep"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_above="@+id/block"
+            android:layout_alignParentLeft="true"
+            android:background="#d3d3d3" />
+
+        <View
+            android:id="@+id/actionSepHp1"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignTop="@+id/aiHP"
+            android:background="#d3d3d3" />
+
+        <TextView
+            android:id="@+id/health"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/specialText"
+            android:layout_alignParentLeft="true"
+            android:padding="15dp"
+            android:text="HP:"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/playerHP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/actionSepHp"
+            android:layout_alignLeft="@+id/playerSP"
+            android:padding="15dp"
+            android:text="0"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <ImageView
+            android:id="@+id/playerDino"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/playerHP"
+            android:src="@drawable/dinosaur_bigger" />
+
+        <ImageView
+            android:id="@+id/aiDino"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/aiHP"
+            android:src="@drawable/dinosaur_bigger" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

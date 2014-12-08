@@ -1,8 +1,11 @@
 package edu.uark.csce.mobile.dinogame;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -159,7 +162,26 @@ public class MapActivity extends FragmentActivity
 		// Testing
 		//addTestGeofence();
 	}
+	public void updateSyncLabel(){
 
+        DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		testLabel.setText("Geofences last synced: " + format.format(new Date()));
+	}
+	public void syncLocations(View v){
+		
+		updateSyncLabel();
+		PreferencesActivity prefs = new PreferencesActivity(this);
+		SendToServer t = new SendToServer(this, prefs.getId());
+		t.execute("GetGeofenceLocations");
+		
+	}
+	public void goBack(View v){
+		finish();
+	}
+	public void goToSummary(View v){
+		Intent intent = new Intent(MapActivity.this, SummaryActivity.class);
+		startActivity(intent);
+	}
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -295,7 +317,7 @@ public class MapActivity extends FragmentActivity
                            .putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, msg);
 			
 			// TODO: update UI for geofence successfully added
-			testLabel.setText("Geofence has been added");
+            updateSyncLabel();
 			updateMap();
 		} else {
 			Log.e(GeofenceUtils.APPTAG, "Geofence failed to add. FIX!");

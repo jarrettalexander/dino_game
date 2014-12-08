@@ -48,7 +48,7 @@ public class SummaryActivity extends ActionBarActivity {
 	// Creating JSON Parser object
 	JSONParser jParser = new JSONParser();
 	public TextView t;
-
+	private static Date lastSync;
 	//server variable for sending
 	private SendToServer serverCon;
 	// products JSONArray
@@ -63,7 +63,6 @@ public class SummaryActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_summary);
 		prefs = new PreferencesActivity(this);
 		prefs.UpdateSecurityId();
-		
 		
 		
 		datasource = new DinosDataSource(this);
@@ -82,19 +81,20 @@ public class SummaryActivity extends ActionBarActivity {
 
 		// Store the data in the list view
 		final List<DinoItem> dinoItems = datasource.getAllDinos();
-		final ArrayAdapter<DinoItem> workoutAdapter = new ArrayAdapter<DinoItem>(this,
-				android.R.layout.simple_expandable_list_item_1, dinoItems);
-		listview.setAdapter(workoutAdapter);
+		final DinoItemAdapter dinoItemAdapter = new DinoItemAdapter(this,
+				R.layout.dino_item, dinoItems);
+		listview.setAdapter(dinoItemAdapter);
 		
 		//create new array of geofence objects
 		geofences = new ArrayList<SimpleGeofence>();
 		mGeofenceStore = new SimpleGeofenceStore(this);
 		t = (TextView) findViewById(R.id.textView1);
 		
-		
-		//load locations from background thread
-		serverCon = new SendToServer(this, prefs.getId());
-		serverCon.execute("GetGeofenceLocations");
+		if (timeToSync()){
+			//load locations from background thread
+			serverCon = new SendToServer(this, prefs.getId());
+			serverCon.execute("GetGeofenceLocations");
+		}
 		
 		/* testing item grab
 		Log.d("executing...","getitemsbylocation");
@@ -107,6 +107,24 @@ public class SummaryActivity extends ActionBarActivity {
 		
 	}
 
+	public boolean timeToSync(){
+		//sync every hour
+		boolean result = true;
+		if (lastSync == null){
+			lastSync = new Date();
+			return result;
+		}
+		Date cur = new Date();
+		Log.d("timetosync lastsync", lastSync.toString());
+		Log.d("timetosync cur", cur.toString());
+		long diffHours = (cur.getTime() - lastSync.getTime()) / (60 * 60 * 1000);
+		if (diffHours < 1){
+			result = false;
+		} else {
+			lastSync = new Date();
+		}
+		return result;
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

@@ -12,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class InventoryActivity extends Activity {
 	
@@ -20,6 +22,8 @@ public class InventoryActivity extends Activity {
 	
 	// Geofence Database
 	private SimpleGeofenceStore geofenceStore;
+
+
 	
 	public final static String EXTRA_POSITION = "this.POSITION";
 	
@@ -33,6 +37,7 @@ public class InventoryActivity extends Activity {
 		
 		geofenceStore = new SimpleGeofenceStore(this);
 		geofenceStore.open();
+		
 		
 		ListView listview = (ListView) findViewById(R.id.itemList);
 		listview.setOnItemClickListener(new OnItemClickListener(){
@@ -55,6 +60,10 @@ public class InventoryActivity extends Activity {
 		for(int i = 0; i < invItems.size(); i++) {
 			Log.d(GeofenceUtils.APPTAG, "item " + i + " = " + invItems.get(i).getId());
 		}
+		
+		if (invItems.size() <= 0){
+			Toast.makeText(this, "No items in inventory", Toast.LENGTH_LONG).show();
+		} 
 		
 		// Retrieve intent from notification and show dialog
 		Bundle extras = getIntent().getExtras();

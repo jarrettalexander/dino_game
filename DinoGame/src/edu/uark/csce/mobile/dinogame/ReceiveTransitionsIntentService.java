@@ -27,7 +27,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		
 		// Check for errors
 		if(LocationClient.hasError(intent)) {
 			int errorCode = LocationClient.getErrorCode(intent);
@@ -148,9 +147,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
     
     private void getItemsByLocation(String[] location_ids){
-    	PreferencesActivity prefs = new PreferencesActivity(this);
+    	
+    	PreferencesActivity prefs = new PreferencesActivity(getApplicationContext());
     	if (serverCon == null){
-    		serverCon = new SendToServer(this, prefs.getId());
+    		serverCon = new SendToServer(getApplicationContext(), prefs.getId());
     	}
     	//create comma delimited string of ids
     	StringBuilder builder = new StringBuilder();

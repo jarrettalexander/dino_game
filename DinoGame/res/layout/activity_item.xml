@@ -1,65 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:text="Item Description"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textStyle="bold"
+        android:gravity="center_vertical|center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
+        android:background="#669900"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"/>
 
     <TextView
-        android:id="@+id/itemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/title"
-        android:layout_marginTop="32dp"
-        android:text="Name:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_below="@+id/title"
-        android:layout_marginTop="17dp"
-        android:layout_toRightOf="@+id/title"
-        android:scaleType="fitXY"
-        android:src="@drawable/razor_image" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/imageView1"
-        android:text="Stat Effects:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textViewNoItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
         android:layout_marginTop="16dp"
+        android:paddingLeft="25dp"
         android:text="Attack:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/textViewNoItems"
         android:layout_marginTop="16dp"
+        android:paddingLeft="25dp"
         android:text="Defense:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textView4"
@@ -68,15 +46,18 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView3"
         android:layout_marginTop="16dp"
+        android:paddingLeft="25dp"
         android:text="Special:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/attackText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignBottom="@+id/textViewNoItems"
         android:layout_alignParentRight="true"
+        android:paddingRight="25dp"
         android:text="+0"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -87,6 +68,7 @@
         android:layout_alignBaseline="@+id/textView3"
         android:layout_alignBottom="@+id/textView3"
         android:layout_alignParentRight="true"
+        android:paddingRight="25dp"
         android:text="+0"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -97,25 +79,88 @@
         android:layout_alignBaseline="@+id/textView4"
         android:layout_alignBottom="@+id/textView4"
         android:layout_alignParentRight="true"
+        android:paddingRight="25dp"
         android:text="+0"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/equipButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:orientation="horizontal" >
+    <Button
+        android:id="@+id/equipButton"
+        android:background="#FFBB33"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
         android:onClick="equipItem"
         android:text="Equip" />
 
     <Button
         android:id="@+id/returnButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:background="#FF4444"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
         android:onClick="cancelView"
         android:text="Return" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/itemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/title"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:text="Name:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_alignTop="@+id/itemName"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/razor_image" />
+
+    <View
+        android:id="@+id/sep1"
+        android:layout_width="wrap_content"
+        android:layout_height="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="15dp"
+        android:background="#d3d3d3" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sep1"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:text="Stat Effects:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <View
+        android:id="@+id/sep3"
+        android:layout_width="wrap_content"
+        android:layout_height="5dp"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="15dp"
+        android:background="#d3d3d3" />
 
 </RelativeLayout>

@@ -5,32 +5,15 @@
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="Create a Dino!"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/colorField"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="29dp"
-        android:text="Name your dinosaur:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/nameField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/textView2"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Dino Name" />
+        android:text="Create Dino"
+        android:textStyle="bold"
+        android:gravity="center_vertical|center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
+        android:background="#669900"
+        android:padding="10dp"
+        android:textColor="#FFFFFF" />
 
     <TextView
         android:id="@+id/textView3"
@@ -38,9 +21,10 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/colorField"
         android:layout_below="@+id/nameField"
-        android:layout_marginTop="14dp"
-        android:text="Color your dinosaur:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_marginTop="15dp"
+        android:text="Color your dino:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
 
     <!-- 
     <RadioGroup
@@ -72,87 +56,132 @@
     </RadioGroup>
     -->
     
-    <TextView
-        android:id="@+id/textColor1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_below="@+id/textView3"
-        android:layout_marginTop="20dp"
-        android:text="color1 here"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_marginBottom="15dp"
+        android:orientation="horizontal" >
+        
+    <Button
+        android:id="@+id/button1"
+        android:background="#FFBB33"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
         android:onClick="saveDino"
         android:text="Save Dino" />
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button1"
-        android:layout_alignBottom="@+id/button1"
-        android:layout_toRightOf="@+id/textView3"
+        android:background="#FF4444"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
         android:onClick="cancelAdd"
         android:text="Cancel" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonChooseColor3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/buttonChooseColor1"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/buttonChooseColor1"
+        android:layout_marginTop="5dp"
+        android:paddingTop="5dp" />
+
+    <Button
+        android:id="@+id/buttonChooseColor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/buttonChooseColor3"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/buttonChooseColor3"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/buttonChooseColor2"
+        android:layout_alignRight="@+id/textViewAttLbl"
+        android:text="Eyes:"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/textViewAttLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/buttonChooseColor3"
+        android:layout_alignRight="@+id/textView4"
+        android:text="Accent:"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonChooseColor3"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@+id/nameField"
+        android:text="Body:"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <Button
         android:id="@+id/buttonChooseColor1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textColor1"
-        android:layout_alignBottom="@+id/textColor1"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="18dp"
-        android:layout_toRightOf="@+id/textColor1"
-        android:text="Main Color" />
-    
+        android:layout_alignLeft="@+id/nameField"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/textView3"
+        android:layout_marginTop="5dp"
+        android:paddingTop="5dp" />
+
     <TextView
-        android:id="@+id/textColor2"
+        android:id="@+id/textViewNoItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/colorField"
-        android:layout_below="@+id/textColor1"
-        android:layout_marginTop="20dp"
-        android:text="color2 here"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <Button
-        android:id="@+id/buttonChooseColor2"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="15dp"
+        android:text="Name your dino:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/nameField"
+        android:background="#d3d3d3" />
+
+    <EditText
+        android:id="@+id/nameField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textColor2"
-        android:layout_alignBottom="@+id/textColor2"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="18dp"
-        android:layout_toRightOf="@+id/textColor2"
-        android:text="Eye Color" />
-    
-    <TextView
-        android:id="@+id/textColor3"
+        android:layout_below="@+id/textViewNoItems"
+        android:layout_toRightOf="@+id/textViewNoItems"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Rex" >
+
+        <requestFocus />
+    </EditText>
+
+    <View
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/colorField"
-        android:layout_below="@+id/textColor2"
-        android:layout_marginTop="20dp"
-        android:text="color3 here"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <Button
-        android:id="@+id/buttonChooseColor3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textColor3"
-        android:layout_alignBottom="@+id/textColor3"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="18dp"
-        android:layout_toRightOf="@+id/textColor3"
-        android:text="Accent Color" />
+        android:layout_height="5dp"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="15dp"
+        android:background="#d3d3d3" />
 
 </RelativeLayout>

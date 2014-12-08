@@ -10,6 +10,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class SimpleGeofenceStore {
 	
@@ -47,12 +48,13 @@ public class SimpleGeofenceStore {
 	 *
      * @param geofence The {@link SimpleGeofence} containing the
      * values you want to save in the local database
-     */
+     */ 
     public SimpleGeofence createGeofence(SimpleGeofence geo) {
     	
     	//saveSimpleGeofenceToSharedPreferences(geo);
     	    	
     	Cursor alreadyPresent = db.query(LocationSQLiteHelper.LOCATIONS_TABLE_NAME, allColumns, LocationSQLiteHelper.LOCATIONS_COLUMN_ID + " = " + geo.getId(), null, null, null, null);
+    	Log.d("exists", String.valueOf(alreadyPresent.getCount()));
     	if(alreadyPresent.getCount() <= 0) {
     	
 	    	ContentValues  values = new ContentValues();

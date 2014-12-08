@@ -1,42 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
     
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:text="Equip an item:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Inventory Items"
+        android:textStyle="bold"
+        android:gravity="center_vertical|center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
+        android:background="#669900"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"/>
 
     <ListView
         android:id="@+id/itemList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/retrieve"
         android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true" >
 
     </ListView>
-
-    <Button
-        android:id="@+id/retrieve"
-        android:layout_width="wrap_content"
+    
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:orientation="horizontal" >
+    <Button
+        android:id="@+id/retrieve"
+        android:background="#FFBB33"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
         android:onClick="viewMap"
-        android:text="Get Item" />
+        android:text="Find Item" />
 
     <Button
         android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:background="#FF4444"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
         android:onClick="cancel"
         android:text="Cancel" />
+    </LinearLayout>
     
 </RelativeLayout>

@@ -3,6 +3,7 @@ package edu.uark.csce.mobile.dinogame;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import android.widget.TextView;
 	 * */
 	public class SendToServer extends AsyncTask<String, String, String> implements Runnable{
 
-		private Context context;
+		private static Context context;
 		private SummaryActivity activity1;
 		public ArrayList<SimpleGeofence> geofences;
 		public SimpleGeofenceStore mGeofenceStore;
@@ -46,7 +47,9 @@ import android.widget.TextView;
 		public ArrayList<InventoryItem> invitems;
 		public String bmpString;
 		public String function;
-		private String user_id;
+		private static String user_id;
+		private TextView mapSyncLabel;
+		private Activity activity;
 		// Creating JSON Parser object
 		JSONParser jParser = new JSONParser();
 		// JSON Node names
@@ -80,15 +83,21 @@ import android.widget.TextView;
 			JSONArray locations = null;
 			JSONArray items = null;
 			
-		public SendToServer(Context con, String id){			
-			context = con;
+		public SendToServer(Context con, String id){
+			Log.d("sendtoserver", "creating new sendtoserver obj");
+			if (context == null){
+				context = con;
+			}
+			activity = (Activity) context;
 			//this.activity1 = act;
 			geofences = new ArrayList<SimpleGeofence>();
 			mGeofenceStore = new SimpleGeofenceStore(con);
 			dinoitems = new ArrayList<DinoItem>();
 			invDataSource = new InventoryDataSource(con);
 			invitems = new ArrayList<InventoryItem>();
-			user_id = id;
+			if (user_id == null){
+				user_id = id;
+			}
 			//getIdFromPreference();
 		}
 		public JSONObject URLRequest(String url, String action, List<NameValuePair> params){
@@ -324,6 +333,12 @@ import android.widget.TextView;
 			case "GetGeofenceLocations":
 				//update local database
 				addLocationsToDB();
+				//activity.setContentView(R.layout.activity_map);
+				//mapSyncLabel = (TextView)activity.findViewById(R.id.GeofenceTestLabel);
+				//DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				
+				//mapSyncLabel.setText("Geofences last synced: " +  format.format(new Date()));
+				//activity.setContentView(R.layout.activity_summary);
 				break;
 			case "GetItemsByLocation":
 				//add items to local db

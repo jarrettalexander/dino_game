@@ -10,7 +10,7 @@ import android.os.Bundle;
 public class DeleteDinoDialogFragment extends DialogFragment {
 	
 	private final String title = "Delete Dino";
-	private final String message = "Are you sure you want to do this? Your dinosaur will die and never get to" +
+	private final String message = "Are you sure you want to do this? Your dinosaur will be released and never get to" +
 			" fight again...";
 	
 	/* The activity that creates an instance of this dialog fragment must
