@@ -44,6 +44,7 @@ public class SummaryActivity extends ActionBarActivity {
 	public ArrayList<SimpleGeofence> geofences;
 	public SimpleGeofenceStore mGeofenceStore;
 	public ProgressDialog pDialog;
+	public PreferencesActivity prefs;
 	// Creating JSON Parser object
 	JSONParser jParser = new JSONParser();
 	public TextView t;
@@ -54,13 +55,16 @@ public class SummaryActivity extends ActionBarActivity {
 		JSONArray locations = null;
 	
 	public final static String EXTRA_POSITION = "this.POSITION";
-	//private final String android_id = Secure.getString(getBaseContext().getContentResolver(),Secure.ANDROID_ID); 
-	private final String PREF_ID = "android_id";
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_summary);
+		prefs = new PreferencesActivity(this);
+		prefs.UpdateSecurityId();
+		
+		
 		
 		datasource = new DinosDataSource(this);
 		datasource.open();
@@ -89,8 +93,8 @@ public class SummaryActivity extends ActionBarActivity {
 		
 		
 		//load locations from background thread
-		serverCon = new SendToServer(this, "23");
-		serverCon.execute("GetGeofenceLocations");
+		serverCon = new SendToServer(this, prefs.getId());
+		//serverCon.execute("GetGeofenceLocations");
 		
 		/* testing item grab
 		Log.d("executing...","getitemsbylocation");
@@ -100,7 +104,7 @@ public class SummaryActivity extends ActionBarActivity {
 		
 
 		//Toast.makeText(this, android_id, Toast.LENGTH_LONG).show();
-		//updateSharedPreferences();
+		
 	}
 
 	@Override
@@ -158,13 +162,5 @@ public class SummaryActivity extends ActionBarActivity {
 		Bitmap bmp = BitmapFactory.decodeByteArray(data,0, data.length);
 		img = (ImageView) findViewById(R.id.imageView1);
 		img.setImageBitmap(bmp);*/
-	}
-	public void updateSharedPreferences(){
-		//sets unique identifier
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-		String prev_id = preferences.getString(PREF_ID, "");
-		if (prev_id != "32"){
-			preferences.edit().putString(PREF_ID, "23").commit();
-		}
 	}
 }
