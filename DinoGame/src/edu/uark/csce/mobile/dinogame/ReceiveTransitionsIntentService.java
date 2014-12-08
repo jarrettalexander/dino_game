@@ -49,7 +49,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 String transitionString = getTransitionString(transitionType);
                 
                 // TODO: move notification send to after item is retrieved from server
-                sendNotification(transitionString, ids);
+                for(int i = 0; i < triggerIds.length; i++) {
+                	Log.d(GeofenceUtils.APPTAG, "triggering id " + i + " = " + triggerIds[i]);
+                	sendNotification(transitionString, ids, triggerIds[i]);
+                }
                 
                 // TODO: add item to inventory in sharedPrefs and start mainActivity of game
                 Log.d(GeofenceUtils.APPTAG, "Setting completed to true for Geofence: " + triggerIds[0]);
@@ -77,7 +80,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                                 				ids));
                 Log.d(GeofenceUtils.APPTAG, getString(R.string.geofence_transition_notification_text));
 
-            //get items from servr by location entered
+                //get items from servr by location entered
                 getItemsByLocation(triggerIds);
                 
             // An invalid transition was reported
@@ -89,18 +92,20 @@ public class ReceiveTransitionsIntentService extends IntentService {
 		
 	}
 	
-    private void sendNotification(String transitionType, String ids) {
+    private void sendNotification(String transitionType, String ids, String triggerId) {
 
         // Create an explicit content Intent that starts the Inventory Activity
     	// TODO: point to the actual inventory activity
         Intent notificationIntent =
-                new Intent(getApplicationContext(), SummaryActivity.class);
+                new Intent(getApplicationContext(), InventoryActivity.class);
+        
+        notificationIntent.putExtra("geofence_id", triggerId);
 
         // Construct a task stack
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
-        // Adds the main Activity to the task stack as the parent
-        stackBuilder.addParentStack(MapActivity.class);
+        // Adds the Summary Activity to the task stack as the parent
+        stackBuilder.addParentStack(SummaryActivity.class);
 
         // Push the content Intent onto the stack
         stackBuilder.addNextIntent(notificationIntent);
@@ -117,7 +122,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
                        getString(R.string.geofence_transition_notification_title,
                                transitionType, ids))
                .setContentText(getString(R.string.geofence_transition_notification_text))
-               .setContentIntent(notificationPendingIntent);
+               .setContentIntent(notificationPendingIntent)
+               .setAutoCancel(true);
 
         // Get an instance of the Notification manager
         NotificationManager mNotificationManager =
@@ -143,7 +149,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     
     private void getItemsByLocation(String[] location_ids){
     	if (serverCon == null){
-    		serverCon = new SendToServer(this);
+    		serverCon = new SendToServer(this, "22");
     	}
     	//create comma delimited string of ids
     	StringBuilder builder = new StringBuilder();
@@ -154,7 +160,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     			builder.append(",");
     		}
     	}
-
+    	serverCon.function = "GetItemsByLocation";
 		serverCon.execute("GetItemsByLocation", builder.toString());
     }
 	

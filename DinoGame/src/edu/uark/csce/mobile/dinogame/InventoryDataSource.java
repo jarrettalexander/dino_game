@@ -41,25 +41,33 @@ public class InventoryDataSource {
 		dbHelper.close();
 	}
 	public InventoryItem insertInventoryItem(InventoryItem item){
-		return this.createInventoryItem(item.getName(), item.getStatEffects(), item.getIcon(), item.getColorMain(), item.getColorAccent1(), item.getColorAccent2());
+		return this.createInventoryItem(item.getId(), item.getName(), item.getStatEffects(), item.getIcon(), item.getColorMain(), item.getColorAccent1(), item.getColorAccent2());
 	}
-	public InventoryItem createInventoryItem(String name, byte[] stats, byte[] icon, int colorMain, int colorAccent1, int colorAccent2) {
-		ContentValues values = new ContentValues();
-		values.put(MySQLiteHelper.COLUMN_NAME, name);
-		values.put(MySQLiteHelper.COLUMN_STAT, stats);
-		values.put(MySQLiteHelper.COLUMN_ICON, icon);
-		values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_ONE, colorMain);
-		values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_TWO, colorAccent1);
-		values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_THREE, colorAccent2);
-		long insertId = database.insert(MySQLiteHelper.TABLE_ITEMS, null,
-				values);
-		Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
-				allColumns, MySQLiteHelper.COLUMN_ITEM + " = " + insertId, null,
-				null, null, null);
-		cursor.moveToFirst();
-		InventoryItem newItem = cursorToItem(cursor);
-		cursor.close();
-		return newItem;
+	public InventoryItem createInventoryItem(long id, String name, byte[] stats, byte[] icon, int colorMain, int colorAccent1, int colorAccent2) {
+		
+		Cursor alreadyPresent = database.query(MySQLiteHelper.TABLE_ITEMS, allColumns, MySQLiteHelper.COLUMN_ITEM + " = " + id, null, null, null, null);
+    	if(alreadyPresent.getCount() <= 0) {
+		
+			ContentValues values = new ContentValues();
+			values.put(MySQLiteHelper.COLUMN_ITEM, id);
+			values.put(MySQLiteHelper.COLUMN_NAME, name);
+			values.put(MySQLiteHelper.COLUMN_STAT, stats);
+			values.put(MySQLiteHelper.COLUMN_ICON, icon);
+			values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_ONE, colorMain);
+			values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_TWO, colorAccent1);
+			values.put(MySQLiteHelper.COLUMN_ITEM_COLOR_THREE, colorAccent2);
+			long insertId = database.insert(MySQLiteHelper.TABLE_ITEMS, null,
+					values);
+			Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
+					allColumns, MySQLiteHelper.COLUMN_ITEM + " = " + insertId, null,
+					null, null, null);
+			cursor.moveToFirst();
+			InventoryItem newItem = cursorToItem(cursor);
+			cursor.close();
+			return newItem;
+    	} else {
+    		return null;
+    	}
 	}
 
 	public void deleteDino(InventoryItem invItem) {
