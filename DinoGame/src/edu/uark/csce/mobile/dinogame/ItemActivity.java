@@ -9,7 +9,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -54,17 +57,19 @@ public class ItemActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		bytesToBitmap(item.getIcon());
+		itemPic = (ImageView) findViewById(R.id.imageView1);
+		// Not working currently!
+		//bytesToBitmap(item.getIcon());
 		
 		// Set info in layout
-		nameText = (TextView)findViewById(R.id.textView2);
+		nameText = (TextView)findViewById(R.id.itemName);
 		nameText.setText(item.getName() + ":");
-		attackText = (TextView)findViewById(R.id.textView4);
-		attackText.setText(Integer.toString(stats.get(0)) + "+");
-		defenseText = (TextView)findViewById(R.id.textView6);
-		defenseText.setText(Integer.toString(stats.get(1)) + "+");
-		specialText = (TextView)findViewById(R.id.textView8);
-		specialText.setText(Integer.toString(stats.get(2)) + "+");
+		attackText = (TextView)findViewById(R.id.attackText);
+		attackText.setText("+" + Integer.toString(stats.get(0)));
+		defenseText = (TextView)findViewById(R.id.defenseText);
+		defenseText.setText("+" + Integer.toString(stats.get(1)));
+		specialText = (TextView)findViewById(R.id.specialText);
+		specialText.setText("+" + Integer.toString(stats.get(2)));
 	}
 	
 	// Button listeners
@@ -93,8 +98,49 @@ public class ItemActivity extends Activity {
 	
 	// Converts byte array for icon to bitmap
 	public void bytesToBitmap(byte[] data) {
-		Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-		itemPic = (ImageView) findViewById(R.id.imageView1);
+		// Handle resizing options to prevent blurring
+    	Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+		
+		/*var documentsFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+
+	    //Create a folder for the images if not exists
+	    System.IO.Directory.CreateDirectory(System.IO.Path.Combine (documentsFolder, "images"));
+
+	    string imatge = System.IO.Path.Combine (documents, "images", "image.jpg");
+
+
+	    System.out..WriteAllBytes(imatge, bytes.Concat(new Byte[]{(byte)0xD9}).ToArray());
+
+	    bitmap = BitmapFactory.DecodeFile(imatge);*/
+		
+        Log.e("debugging", "data: " + data);
+        Log.e("debugging", "bitmap: " + bmp);
+        
+        // Create a mutable copy of the bitmap
+        bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
+        bmp.setHasAlpha(true);
+
+        // Recolor item based on greyscale image
+        for(int j = 0; j < bmp.getHeight(); j++) {
+        	for(int i = 0; i < bmp.getWidth(); i++) {
+        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
+        			//bmp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
+        			bmp.setPixel(i, j, item.getColorMain());
+        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
+        			bmp.setPixel(i, j, item.getColorAccent1());
+        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
+        			bmp.setPixel(i, j, item.getColorAccent2());
+        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+        			bmp.setPixel(i, j, Color.TRANSPARENT);
+        		}
+        	}
+        }
+        
+        // Scale bitmap to appropriate size
+        bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() * 12, bmp.getHeight() * 12, false);
+        
 		itemPic.setImageBitmap(bmp);
 	}
 
