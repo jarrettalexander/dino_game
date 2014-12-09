@@ -13,7 +13,19 @@
         android:textAppearance="?android:attr/textAppearanceLarge" 
         android:background="#669900"
         android:padding="10dp"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/itemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/title"
+        android:paddingTop="15dp"
+        android:paddingLeft="15dp"
+        android:text="Name:"
+        android:textAppearance="?android:attr/textAppearanceMedium" 
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewNoItems"
@@ -112,18 +124,6 @@
         android:text="Return" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/itemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/title"
-        android:paddingLeft="15dp"
-        android:paddingTop="15dp"
-        android:text="Name:"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold" />
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="75dp"
@@ -131,7 +131,7 @@
         android:layout_alignTop="@+id/itemName"
         android:layout_centerHorizontal="true"
         android:scaleType="fitXY"
-        android:src="@drawable/razor_image" />
+        android:src="@drawable/unknown_item_image" />
 
     <View
         android:id="@+id/sep1"

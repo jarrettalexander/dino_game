@@ -29,6 +29,9 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private DinosDataSource datasource;
 	List<DinoItem> dinoItems;
 	
+	private InventoryDataSource inventoryDatasource;
+	private InventoryItem equippedItem;	
+	
 	// Dino info
 	private int position;
 	private DinoItem dino;
@@ -45,7 +48,11 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private ProgressBar expBar;
 	private ImageView dinoPic;
 	
-	public final static String EXTRA_POSITION = "this.POSITION";
+	// Image scale
+	private static final int bitmapScale = 12; 
+	
+	// Used for extras
+	public final static String EXTRA_DINO_POSITION = "this.DINO_POSITION";
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,6 +60,9 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		
 		datasource = new DinosDataSource(this);
 		datasource.open();
+		
+		inventoryDatasource = new InventoryDataSource(this);
+		inventoryDatasource.open();
 		
 		// Store the dinos in list
 		dinoItems = datasource.getAllDinos();
@@ -67,8 +77,13 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(dino.getmEquip() == -1)
+		if(dino.getmEquip() != -1) { 
+			equipped = true;
+			equippedItem = inventoryDatasource.getItemById(dino.getmEquip());
+		} else {
 			equipped = false;
+		}
+		
 		
 		// Adjust Views based on data
 		nameText = (TextView)findViewById(R.id.textViewNoItems);
@@ -81,8 +96,9 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		specialText.setText(Integer.toString(stats.get(2)));
 		if(equipped) {
 			equipText = (TextView)findViewById(R.id.textView11);
-			equipText.setText("a hat");
-			// TODO Retrieve item information and display it
+			if(equippedItem != null) {
+				equipText.setText(equippedItem.getName());
+			}
 		}
 		expBar = (ProgressBar)findViewById(R.id.expBar);
 		expBar.setProgress(dino.getmExperience());
@@ -99,12 +115,13 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	
 	public void enterBattle(View v) {
 		Intent intent = new Intent(CharacterActivity.this, BattleActivity.class);
-		intent.putExtra(EXTRA_POSITION, position);
+		intent.putExtra(EXTRA_DINO_POSITION, position);
 		startActivity(intent);
 	}
 	
 	public void equipItem(View v) {
 		Intent intent = new Intent(CharacterActivity.this, InventoryActivity.class);
+		intent.putExtra(EXTRA_DINO_POSITION, position);
 		startActivity(intent);
 	}
 	
@@ -186,7 +203,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    }
 	    
 	    // Scale bitmap to appropriate size
-	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * 12, bp.getHeight() * 12, false);
+	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * bitmapScale, bp.getHeight() * bitmapScale, false);
     		  
 	    // Set ImageView to dino bitmap
 	    dinoPic = (ImageView)findViewById(R.id.dinosaur);

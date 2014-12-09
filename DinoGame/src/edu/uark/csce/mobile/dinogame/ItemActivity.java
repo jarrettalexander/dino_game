@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,14 +22,21 @@ import android.widget.TextView;
 public class ItemActivity extends Activity {
 	
 	// Database
-	private InventoryDataSource datasource;
+	private InventoryDataSource itemDatasource;
 	List<InventoryItem> invItems;
 	
+	private DinosDataSource dinoDatasource;
+	List<DinoItem> dinoItems;
+	
 	// Item info
-	private int position;
+	private int itemPosition;
+	private int dinoPosition;
+	
 	private InventoryItem item;
 	private ArrayList<Integer> stats;
 	private boolean equipped;
+	
+	private DinoItem currentDino;
 	
 	// Info Views
 	private TextView nameText;
@@ -41,16 +49,32 @@ public class ItemActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item);
 		
-		datasource = new InventoryDataSource(this);
-		datasource.open();
+		itemDatasource = new InventoryDataSource(this);
+		itemDatasource.open();
+		
+		dinoDatasource = new DinosDataSource(this);
+		dinoDatasource.open();
 		
 		// Store the items in list
-		invItems = datasource.getAllItems();
+		invItems = itemDatasource.getAllItems();
+		
+		// Read dinos from local database
+		dinoItems = dinoDatasource.getAllDinos();
+		
+		// Retrieve dino info
+		Intent intent = getIntent();
+		dinoPosition = intent.getIntExtra(CharacterActivity.EXTRA_DINO_POSITION, -1);
+		if(dinoPosition >= 0) {
+			currentDino = dinoItems.get(dinoPosition);
+		} else {
+			Button equipButton = (Button)findViewById(R.id.equipButton);
+			equipButton.setEnabled(false);
+		}
 		
 		// Retrieve item info
-		Intent intent = getIntent();
-		position = intent.getIntExtra(InventoryActivity.EXTRA_POSITION, 0);
-		item = invItems.get(position);
+		itemPosition = intent.getIntExtra(InventoryActivity.EXTRA_POSITION, 0);
+		item = invItems.get(itemPosition);
+		
 		stats = new ArrayList<Integer>();
 		try {
 			convertBytes(item.getStatEffects());
@@ -58,8 +82,9 @@ public class ItemActivity extends Activity {
 			e.printStackTrace();
 		}
 		itemPic = (ImageView) findViewById(R.id.imageView1);
-		// Not working currently!
+		//TODO: Not working currently!
 		//bytesToBitmap(item.getIcon());
+		drawPlaceholderItemBitmap();
 		
 		// Set info in layout
 		nameText = (TextView)findViewById(R.id.itemName);
@@ -74,7 +99,14 @@ public class ItemActivity extends Activity {
 	
 	// Button listeners
 	public void equipItem(View v) {
+		
+		// Update equipment for current dino
+		currentDino.setmEquip(item.getId());
+		dinoDatasource.updateDinoEquip(currentDino);
+		
+		// Return to current dino's character screen
 		Intent intent = new Intent(ItemActivity.this, CharacterActivity.class);
+		intent.putExtra(SummaryActivity.EXTRA_POSITION, dinoPosition);
 		startActivity(intent);
 	}
 	
@@ -101,6 +133,7 @@ public class ItemActivity extends Activity {
 		// Handle resizing options to prevent blurring
     	Options options = new BitmapFactory.Options();
         options.inScaled = false;
+        
         Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 		
 		/*var documentsFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
@@ -126,7 +159,6 @@ public class ItemActivity extends Activity {
         for(int j = 0; j < bmp.getHeight(); j++) {
         	for(int i = 0; i < bmp.getWidth(); i++) {
         		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
-        			//bmp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
         			bmp.setPixel(i, j, item.getColorMain());
         		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
         			bmp.setPixel(i, j, item.getColorAccent1());
@@ -137,6 +169,40 @@ public class ItemActivity extends Activity {
         		}
         	}
         }
+        
+        // Scale bitmap to appropriate size
+        bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() * 12, bmp.getHeight() * 12, false);
+        
+		itemPic.setImageBitmap(bmp);
+	}
+	
+	private void drawPlaceholderItemBitmap() {
+		// Handle resizing options to prevent blurring
+    	Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hat_top_hat, options);
+		
+        Log.e("debugging", "bitmap: " + bmp);
+        
+        // Create a mutable copy of the bitmap
+        bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
+        bmp.setHasAlpha(true);
+
+        // Recolor item based on greyscale image
+//        for(int j = 0; j < bmp.getHeight(); j++) {
+//        	for(int i = 0; i < bmp.getWidth(); i++) {
+//        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
+//        			bmp.setPixel(i, j, item.getColorMain());
+//        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
+//        			bmp.setPixel(i, j, item.getColorAccent1());
+//        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
+//        			bmp.setPixel(i, j, item.getColorAccent2());
+//        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+//        			bmp.setPixel(i, j, Color.TRANSPARENT);
+//        		}
+//        	 }
+//        }
         
         // Scale bitmap to appropriate size
         bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() * 12, bmp.getHeight() * 12, false);
