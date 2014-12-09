@@ -112,6 +112,7 @@ public class ItemActivity extends Activity {
 	
 	public void cancelView(View v) {
 		Intent intent = new Intent(ItemActivity.this, InventoryActivity.class);
+		intent.putExtra(CharacterActivity.EXTRA_DINO_POSITION, dinoPosition);
 		startActivity(intent);
 	}
 	
