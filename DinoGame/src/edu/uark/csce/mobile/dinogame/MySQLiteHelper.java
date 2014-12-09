@@ -47,11 +47,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 			COLUMN_COLOR_ONE + " integer not null, " +
 			COLUMN_COLOR_TWO + " integer not null, " +
 			COLUMN_COLOR_THREE + " integer not null, " +
-			COLUMN_EQUIP + " integer, " + 
+			COLUMN_EQUIP + " long, " + 
 			"FOREIGN KEY ("+COLUMN_EQUIP+") REFERENCES "+TABLE_ITEMS+" ("+COLUMN_ITEM+"));";
 	
 	private static final String DATABASE_CREATE2 = "create table " + TABLE_ITEMS + "(" + 
-			COLUMN_ITEM + " integer primary key autoincrement, " + 
+			COLUMN_ITEM + " integer primary key, " + 
 			COLUMN_NAME + " text not null, " + 
 			COLUMN_ICON + " blob not null, " +
 			COLUMN_ITEM_COLOR_ONE + " integer not null, " +

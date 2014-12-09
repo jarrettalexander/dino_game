@@ -44,7 +44,7 @@ public class DinosDataSource {
 		dbHelper.close();
 	}
 
-	public DinoItem createDinoItem(String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, int equipID) {
+	public DinoItem createDinoItem(String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, long equipID) {
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_NAME, name);
 		values.put(MySQLiteHelper.COLUMN_DATE, new SimpleDateFormat("yyyy-MM-dd").format(date));
@@ -66,6 +66,13 @@ public class DinosDataSource {
 		DinoItem newDino = cursorToDino(cursor);
 		cursor.close();
 		return newDino;
+	}
+	
+	public void updateDinoEquip(DinoItem dino) {
+		String strFilter = "_id=" + dino.getmID();
+		ContentValues args = new ContentValues();
+		args.put(MySQLiteHelper.COLUMN_EQUIP, dino.getmEquip());
+		database.update(MySQLiteHelper.TABLE_DINOS, args, strFilter, null);
 	}
 
 	public void deleteDino(DinoItem dino) {
@@ -104,7 +111,7 @@ public class DinosDataSource {
 		dino.setColorAccent1(cursor.getInt(7));
 		dino.setColorAccent2(cursor.getInt(8));
 		if(cursor.getInt(7) != -1) {
-			dino.setmEquip(cursor.getInt(9));
+			dino.setmEquip(cursor.getLong(9));
 		}
 		return dino;
 	}

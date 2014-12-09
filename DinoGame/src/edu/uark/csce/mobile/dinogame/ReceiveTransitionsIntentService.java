@@ -98,6 +98,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         Intent notificationIntent =
                 new Intent(getApplicationContext(), InventoryActivity.class);
         
+        notificationIntent.putExtra("from_notification", true);
         notificationIntent.putExtra("geofence_id", triggerId);
 
         // Construct a task stack
@@ -116,7 +117,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Set the notification contents
-        builder.setSmallIcon(R.drawable.razor_image)
+        builder.setSmallIcon(R.drawable.ic_stat_notify_dino)
                .setContentTitle(
                        getString(R.string.geofence_transition_notification_title,
                                transitionType, ids))

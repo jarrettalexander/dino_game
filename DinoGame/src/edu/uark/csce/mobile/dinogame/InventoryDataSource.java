@@ -59,7 +59,7 @@ public class InventoryDataSource {
 			long insertId = database.insert(MySQLiteHelper.TABLE_ITEMS, null,
 					values);
 			Cursor cursor = database.query(MySQLiteHelper.TABLE_ITEMS,
-					allColumns, MySQLiteHelper.COLUMN_ITEM + " = " + insertId, null,
+					allColumns, MySQLiteHelper.COLUMN_ITEM + " = " + id, null,
 					null, null, null);
 			cursor.moveToFirst();
 			InventoryItem newItem = cursorToItem(cursor);
@@ -93,16 +93,28 @@ public class InventoryDataSource {
 		cursor.close();
 		return invItems;
 	}
+	
+	public InventoryItem getItemById(long id) {
+		String query = "SELECT * FROM " + MySQLiteHelper.TABLE_ITEMS + " WHERE " + MySQLiteHelper.COLUMN_ITEM + " = " + id;
+		Cursor cursor = database.rawQuery(query, null);
+		cursor.moveToFirst();
+		if(cursor.getCount() > 0) {
+			InventoryItem item = cursorToItem(cursor);
+			return item;
+		} else {
+			return null;
+		}
+	}
 
 	private InventoryItem cursorToItem(Cursor cursor) throws ParseException {
 		InventoryItem invItem = new InventoryItem();
-		invItem.setId(cursor.getLong(0));
-		invItem.setName(cursor.getString(1));
-		invItem.setStatEffects(cursor.getBlob(2));
-		invItem.setIcon(cursor.getBlob(3));
-		invItem.setColorMain(cursor.getInt(4));
-		invItem.setColorAccent1(cursor.getInt(5));
-		invItem.setColorAccent2(cursor.getInt(6));
+		invItem.setId(cursor.getLong(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ITEM)));
+		invItem.setName(cursor.getString(cursor.getColumnIndex(MySQLiteHelper.COLUMN_NAME)));
+		invItem.setStatEffects(cursor.getBlob(cursor.getColumnIndex(MySQLiteHelper.COLUMN_STAT)));
+		invItem.setIcon(cursor.getBlob(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ICON)));
+		invItem.setColorMain(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ITEM_COLOR_ONE)));
+		invItem.setColorAccent1(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ITEM_COLOR_TWO)));
+		invItem.setColorAccent2(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ITEM_COLOR_THREE)));
 		return invItem;
 	}
 
