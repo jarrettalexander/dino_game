@@ -125,7 +125,7 @@ public class DinosDataSource {
 		dino.setColorAccent1(cursor.getInt(7));
 		dino.setColorAccent2(cursor.getInt(8));
 		if(cursor.getInt(7) != -1) {
-			dino.setmEquip(cursor.getLong(9));
+			dino.setmEquip(cursor.getInt(9));
 		}
 		return dino;
 	}

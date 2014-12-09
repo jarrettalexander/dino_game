@@ -47,7 +47,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 			COLUMN_COLOR_ONE + " integer not null, " +
 			COLUMN_COLOR_TWO + " integer not null, " +
 			COLUMN_COLOR_THREE + " integer not null, " +
-			COLUMN_EQUIP + " long, " + 
+			COLUMN_EQUIP + " integer, " + 
 			"FOREIGN KEY ("+COLUMN_EQUIP+") REFERENCES "+TABLE_ITEMS+" ("+COLUMN_ITEM+"));";
 	
 	private static final String DATABASE_CREATE2 = "create table " + TABLE_ITEMS + "(" + 

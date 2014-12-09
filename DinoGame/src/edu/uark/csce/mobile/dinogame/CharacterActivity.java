@@ -54,6 +54,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	
 	// Image scale
 	private static final int bitmapScale = 12; 
+	private Bitmap unscaledDinoBitmap;
 	
 	// Used for extras
 	public final static String EXTRA_DINO_POSITION = "this.DINO_POSITION";
@@ -82,7 +83,9 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(dino.getmEquip() != -1) { 
+		
+		Log.d(GeofenceUtils.APPTAG, "dino equip = " + dino.getmEquip());
+		if(dino.getmEquip() > 0) { 
 			equipped = true;
 			equippedItem = inventoryDatasource.getItemById(dino.getmEquip());
 			itemName = equippedItem.getName();
@@ -123,6 +126,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		expBar.setProgress(dino.getmExperience());
 		
 		drawDinoBitmap();
+		drawItemBitmap();
 		
 	}
 	
@@ -209,7 +213,6 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    for(int j = 0; j < bp.getHeight(); j++) {
 	    	for(int i = 0; i < bp.getWidth(); i++) {
 	    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
-	    			//bp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
 	    			bp.setPixel(i, j, dino.getColorMain());
 	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
 	    			bp.setPixel(i, j, dino.getColorAccent1());
@@ -221,12 +224,14 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    	}
 	    }
 	    
+	    unscaledDinoBitmap = bp;
+	    
 	    // Scale bitmap to appropriate size
-	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * bitmapScale, bp.getHeight() * bitmapScale, false);
+	    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bp, bp.getWidth() * bitmapScale, bp.getHeight() * bitmapScale, false);
     		  
 	    // Set ImageView to dino bitmap
 	    dinoPic = (ImageView)findViewById(R.id.dinosaur);
-	    dinoPic.setImageBitmap(bp);
+	    dinoPic.setImageBitmap(scaledBitmap);
 	    
 	    // Unused alpha stuff
 	    /*bp.setPixel(0, 0, Color.rgb(195, 195, 195));
@@ -242,6 +247,64 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    if(color1 == color3) {
 	    	Log.e("color test", "Matches itself!!!");
 	    }*/
+    }
+    
+    private void drawItemBitmap() {
+    	// Handle resizing options to prevent blurring
+    	Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.hat_top_hat, options);
+    	
+    	// Create a mutable copy of the bitmap
+		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
+		bp.setHasAlpha(true);
+		
+		if(dino.getmEquip() > 0) {
+			Log.d(GeofenceUtils.APPTAG, "this dino has something equipped");
+			// Recolor item based on greyscale image
+		    for(int j = 0; j < bp.getHeight(); j++) {
+		    	for(int i = 0; i < bp.getWidth(); i++) {
+		    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
+		    			//bp.setPixel(i, j, dino.getColorMain());
+		    			bp.setPixel(i, j, Color.argb(255, 0, 17, 23));
+		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
+		    			//bp.setPixel(i, j, dino.getColorAccent1());
+		    			bp.setPixel(i, j, Color.argb(255, 0, 17, 23));
+		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
+		    			//bp.setPixel(i, j, dino.getColorAccent2());
+		    			bp.setPixel(i, j, Color.argb(255, 0, 17, 23));
+		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+		    			bp.setPixel(i, j, Color.TRANSPARENT);
+		    		}
+		    	}
+		    }
+		} else {
+			Log.d(GeofenceUtils.APPTAG, "this dino has nothing equipped");
+			for(int j = 0; j < bp.getHeight(); j++) {
+				for(int i = 0; i < bp.getWidth(); i++) {
+					bp.setPixel(i, j, Color.argb(0, 0, 0, 0));
+				}
+			}
+		}
+		
+		// Add item bitmap to dino bitmap
+		for(int j = 0; j < 11; j++) { // height
+			for(int i = 11; i < unscaledDinoBitmap.getWidth(); i++) { // width from pixel 11 to 22
+				if(bp.getPixel(i-11, j) != Color.TRANSPARENT)
+					unscaledDinoBitmap.setPixel(i, j, bp.getPixel(i-11, j));
+			}
+		}
+		
+//		int[] pixels = {};
+//		bp.getPixels(pixels, 0, bp.getWidth(), 0, 0, bp.getWidth(), bp.getHeight());
+//		unscaledDinoBitmap.setPixels(pixels, 0, 12, 12, 0, bp.getWidth(), bp.getHeight());
+	    
+	    // Scale bitmap to appropriate size
+	    Bitmap scaledDinoBitmap = Bitmap.createScaledBitmap(unscaledDinoBitmap, unscaledDinoBitmap.getWidth() * bitmapScale, unscaledDinoBitmap.getHeight() * bitmapScale, false);
+    		  
+	    // Set ImageView to item bitmap
+	    dinoPic = (ImageView)findViewById(R.id.dinosaur);
+	    dinoPic.setImageBitmap(scaledDinoBitmap);
     }
 
 }

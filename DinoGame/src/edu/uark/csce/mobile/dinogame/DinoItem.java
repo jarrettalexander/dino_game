@@ -19,7 +19,7 @@ public class DinoItem {
 	private int mColorMain;
 	private int mColorAccent1;
 	private int mColorAccent2;
-	private long mEquip = -1;
+	private int mEquip = -1;
 
 	public DinoItem() {
 		// Initialize dino
@@ -35,7 +35,7 @@ public class DinoItem {
 		mEquip = -1;
 	}
 	
-	public DinoItem(long ID, String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, long equip) {
+	public DinoItem(long ID, String name, Date date, int level, int experience, byte[] stats, int colorMain, int colorAccent1, int colorAccent2, int equip) {
 		// Initialize first dino
 		mID = ID;
 		mName = name;
@@ -130,11 +130,11 @@ public class DinoItem {
 		this.mColorAccent2 = color;
 	}
  
-	public long getmEquip() {
+	public int getmEquip() {
 		return mEquip;
 	}
 
-	public void setmEquip(long mEquip) {
+	public void setmEquip(int mEquip) {
 		this.mEquip = mEquip;
 	}
 	
