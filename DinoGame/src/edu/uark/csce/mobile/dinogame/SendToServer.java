@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -318,6 +319,9 @@ import android.widget.TextView;
 				result = GetItemsByLocation(args[1]);
 				updateLocationsVisited(args[1]);
 				break;
+			case "SyncGeofenceLocations":
+				result = GetGeofenceLocations();
+				break;
 			}
 			return result;
 		}
@@ -333,7 +337,9 @@ import android.widget.TextView;
 			case "GetGeofenceLocations":
 				//update local database
 				addLocationsToDB();
-				//activity.setContentView(R.layout.activity_map);
+			
+				
+				
 				//mapSyncLabel = (TextView)activity.findViewById(R.id.GeofenceTestLabel);
 				//DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				
@@ -344,6 +350,11 @@ import android.widget.TextView;
 				//add items to local db
 				//this.activity1.set(bmpString);
 				addItemsToDB();
+				break;
+			case "SyncGeofenceLocations":
+
+				Intent intent = new Intent(activity, MapActivity.class);
+				activity.startActivity(intent);
 				break;
 			}
 			Log.d("sum act", "setting tmp");

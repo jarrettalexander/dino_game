@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -45,6 +46,8 @@ public class SummaryActivity extends ActionBarActivity {
 	public SimpleGeofenceStore mGeofenceStore;
 	public ProgressDialog pDialog;
 	public PreferencesActivity prefs;
+	
+	private BackgroundSound music;
 	// Creating JSON Parser object
 	JSONParser jParser = new JSONParser();
 	public TextView t;
@@ -103,7 +106,15 @@ public class SummaryActivity extends ActionBarActivity {
 		*/
 		
 
-		//Toast.makeText(this, android_id, Toast.LENGTH_LONG).show();
+		try{
+			//Toast.makeText(this, android_id, Toast.LENGTH_LONG).show();
+			if (music == null){
+				music = new BackgroundSound();
+			}		
+			music.execute();
+		} catch(Exception e){
+			//ignore expceptions - its just music
+		}
 		
 	}
 
@@ -181,4 +192,38 @@ public class SummaryActivity extends ActionBarActivity {
 		img = (ImageView) findViewById(R.id.imageView1);
 		img.setImageBitmap(bmp);*/
 	}
+	
+	@Override
+	public void onResume() {
+	    super.onResume();
+	    try{
+	    	music.execute();
+	    }catch(Exception e){
+	    	
+	    }
+	}
+	@Override
+	public void onPause() {
+	    super.onPause();
+	   try{
+		   music.cancel(true);
+	   }catch (Exception e){
+		   
+	   }
+	}
+	public class BackgroundSound extends AsyncTask<Void, Void, Void> {
+
+	    @Override
+	    protected Void doInBackground(Void... params) {
+	    	try{
+	        MediaPlayer player = MediaPlayer.create(SummaryActivity.this, R.raw.theme); 
+	        player.setLooping(true); // Set looping 
+	        player.setVolume(100,100); 
+	        player.start(); 
+	    	} catch (Exception e){
+	    		//ignore
+	    	}
+	        return null;
+	    }
+}
 }

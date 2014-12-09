@@ -172,7 +172,7 @@ public class MapActivity extends FragmentActivity
 		updateSyncLabel();
 		PreferencesActivity prefs = new PreferencesActivity(this);
 		SendToServer t = new SendToServer(this, prefs.getId());
-		t.execute("GetGeofenceLocations");
+		t.execute("SyncGeofenceLocations");
 		
 	}
 	public void goBack(View v){
