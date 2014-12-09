@@ -147,6 +147,7 @@ public class InventoryActivity extends Activity {
 			intent = new Intent(InventoryActivity.this, SummaryActivity.class);
 		} else {
 			intent = new Intent(InventoryActivity.this, CharacterActivity.class);
+			intent.putExtra(EXTRA_POSITION, dinoPosition);
 		}
 		startActivity(intent);
 	}

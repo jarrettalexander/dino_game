@@ -43,6 +43,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	private boolean equipped;
 	private int[] color = {0, 0, 0};
 	private boolean victory = false;
+	private boolean dead = false;
 	
 	// Item info
 	private String itemName;
@@ -142,9 +143,15 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 			hp = hp - aiDmg;
 			if(AIhp <= 0) {
 				AIhp = 0;
-				victory();
-			} else if(hp <= 0) {
+				victory = true;
+			}
+			if(hp <= 0) {
 				hp = 0;
+				dead = true;
+			}
+			if(victory == true) {
+				victory();
+			} else if(dead == true) {
 				lose();
 			}
 		} else if(aiMove == 0) { // AI performs attack
@@ -159,9 +166,15 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 			hp = hp - aiDmg;
 			if(AIhp <= 0) {
 				AIhp = 0;
-				victory();
-			} else if(hp <= 0) {
+				victory = true;
+			}
+			if(hp <= 0) {
 				hp = 0;
+				dead = true;
+			}
+			if(victory == true) {
+				victory();
+			} else if(dead == true) {
 				lose();
 			}
 		} else if(aiMove == 1) { // AI blocks
@@ -261,9 +274,15 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				hp = hp - aiDmg;
 				if(AIhp <= 0) {
 					AIhp = 0;
-					victory();
-				} else if(hp <= 0) {
+					victory = true;
+				}
+				if(hp <= 0) {
 					hp = 0;
+					dead = true;
+				}
+				if(victory == true) {
+					victory();
+				} else if(dead == true) {
 					lose();
 				}
 			} else if(aiMove == 0) {
@@ -278,9 +297,15 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				hp = hp - aiDmg;
 				if(AIhp <= 0) {
 					AIhp = 0;
-					victory();
-				} else if(hp <= 0) {
+					victory = true;
+				}
+				if(hp <= 0) {
 					hp = 0;
+					dead = true;
+				}
+				if(victory == true) {
+					victory();
+				} else if(dead == true) {
 					lose();
 				}
 			} else if(aiMove == 1) {

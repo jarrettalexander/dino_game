@@ -34,6 +34,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	
 	// Dino info
 	private int position;
+	private int invPosition;
 	private DinoItem dino;
 	private ArrayList<Integer> stats;
 	private boolean equipped;
@@ -75,7 +76,12 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		// Retrieve dino info
 		Intent intent = getIntent();
 		position = intent.getIntExtra(SummaryActivity.EXTRA_POSITION, 0);
-		dino = dinoItems.get(position);
+		invPosition = intent.getIntExtra(InventoryActivity.EXTRA_POSITION, -1);
+		if(invPosition != -1) {
+			dino = dinoItems.get(invPosition);
+		} else {			
+			dino = dinoItems.get(position);
+		}
 		stats = new ArrayList<Integer>();
 		itemStats = new ArrayList<Integer>();
 		try {
