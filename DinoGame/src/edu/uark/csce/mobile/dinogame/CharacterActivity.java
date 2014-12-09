@@ -45,6 +45,8 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private ProgressBar expBar;
 	private ImageView dinoPic;
 	
+	public final static String EXTRA_POSITION = "this.POSITION";
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_character);
@@ -97,6 +99,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	
 	public void enterBattle(View v) {
 		Intent intent = new Intent(CharacterActivity.this, BattleActivity.class);
+		intent.putExtra(EXTRA_POSITION, position);
 		startActivity(intent);
 	}
 	

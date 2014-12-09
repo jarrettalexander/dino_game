@@ -150,16 +150,17 @@
             android:id="@+id/playerDino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/playerHP"
+            android:layout_marginTop="30dp"
             android:src="@drawable/dinosaur_bigger" />
 
         <ImageView
             android:id="@+id/aiDino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/aiHP"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/playerDino"
             android:src="@drawable/dinosaur_bigger" />
 
     </RelativeLayout>

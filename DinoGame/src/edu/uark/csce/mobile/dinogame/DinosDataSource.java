@@ -91,6 +91,20 @@ public class DinosDataSource {
 		cursor.close();
 		return dinos;
 	}
+	
+	/**
+     * Sets the Completed flag to True for the Geofence in the local database with the associated ID.
+     * 
+     * @param id The ID of the geofence to set Completed to true
+     */
+    public void setDinoExp(String id, int level, int exp, byte[] stats) {
+    	String where = "_id=" + id;
+    	ContentValues args = new ContentValues();
+    	args.put(MySQLiteHelper.COLUMN_LEVEL, level);
+    	args.put(MySQLiteHelper.COLUMN_EXP, exp);
+    	args.put(MySQLiteHelper.COLUMN_STATS, stats);
+    	database.update(MySQLiteHelper.TABLE_DINOS, args, where, null);
+    }
 
 	private DinoItem cursorToDino(Cursor cursor) throws ParseException {
 		DinoItem dino = new DinoItem();
