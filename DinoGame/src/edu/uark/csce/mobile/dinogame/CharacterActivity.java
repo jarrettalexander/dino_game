@@ -39,6 +39,10 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private boolean equipped;
 	private int[] color = {0, 0, 0};
 	
+	// Item info
+	private String itemName;
+	private ArrayList<Integer> itemStats;
+	
 	// Info Views
 	private TextView nameText;
 	private TextView attackText;
@@ -72,14 +76,22 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		position = intent.getIntExtra(SummaryActivity.EXTRA_POSITION, 0);
 		dino = dinoItems.get(position);
 		stats = new ArrayList<Integer>();
+		itemStats = new ArrayList<Integer>();
 		try {
-			convertBytes(dino.getmStats());
+			convertBytes(dino.getmStats(), stats);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		if(dino.getmEquip() != -1) { 
 			equipped = true;
 			equippedItem = inventoryDatasource.getItemById(dino.getmEquip());
+			itemName = equippedItem.getName();
+			try {
+				convertBytes(equippedItem.getStatEffects(), itemStats);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			equipped = false;
 		}
@@ -88,17 +100,24 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		// Adjust Views based on data
 		nameText = (TextView)findViewById(R.id.textViewNoItems);
 		nameText.setText(dino.getmName());
-		attackText = (TextView)findViewById(R.id.textView4);
-		attackText.setText(Integer.toString(stats.get(0)));
-		defenseText = (TextView)findViewById(R.id.textView6);
-		defenseText.setText(Integer.toString(stats.get(1)));
-		specialText = (TextView)findViewById(R.id.textView8);
-		specialText.setText(Integer.toString(stats.get(2)));
 		if(equipped) {
-			equipText = (TextView)findViewById(R.id.textView11);
 			if(equippedItem != null) {
+				attackText = (TextView)findViewById(R.id.textView4);
+				attackText.setText(Integer.toString(stats.get(0))+" + "+Integer.toString(itemStats.get(0)));
+				defenseText = (TextView)findViewById(R.id.textView6);
+				defenseText.setText(Integer.toString(stats.get(1))+" + "+Integer.toString(itemStats.get(1)));
+				specialText = (TextView)findViewById(R.id.textView8);
+				specialText.setText(Integer.toString(stats.get(2))+" + "+Integer.toString(itemStats.get(2)));
+				equipText = (TextView)findViewById(R.id.textView11);
 				equipText.setText(equippedItem.getName());
 			}
+		} else {
+			attackText = (TextView)findViewById(R.id.textView4);
+			attackText.setText(Integer.toString(stats.get(0)));
+			defenseText = (TextView)findViewById(R.id.textView6);
+			defenseText.setText(Integer.toString(stats.get(1)));
+			specialText = (TextView)findViewById(R.id.textView8);
+			specialText.setText(Integer.toString(stats.get(2)));
 		}
 		expBar = (ProgressBar)findViewById(R.id.expBar);
 		expBar.setProgress(dino.getmExperience());
@@ -130,13 +149,13 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	}
 	
 	// Converts byte arrays for latitudes and longitudes to array lists
-	public void convertBytes(byte[] bytStats) throws IOException {
+	public void convertBytes(byte[] bytStats, ArrayList<Integer> Stats) throws IOException {
 
 		if (bytStats != null) {
 			ByteArrayInputStream bin = new ByteArrayInputStream(bytStats);
 			DataInputStream din = new DataInputStream(bin);
 			for (int i = 0; i < bytStats.length; i++) {
-				stats.add(Integer.valueOf(din.readInt()));
+				Stats.add(Integer.valueOf(din.readInt()));
 			}
 		}
 

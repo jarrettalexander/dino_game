@@ -75,7 +75,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 
 		// Retrieve dino info
 		Intent intent = getIntent();
-		position = intent.getIntExtra(CharacterActivity.EXTRA_POSITION, 0);
+		position = intent.getIntExtra(CharacterActivity.EXTRA_DINO_POSITION, 0);
 		dino = dinoItems.get(position);
 		level = dino.getmLevel();
 		experience = dino.getmExperience();
