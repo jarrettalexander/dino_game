@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,6 +31,9 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	private DinosDataSource datasource;
 	List<DinoItem> dinoItems;
 	
+	private InventoryDataSource inventoryDatasource;
+	private InventoryItem equippedItem;
+	
 	// Dino info
 	private int position;
 	private DinoItem dino;
@@ -39,6 +43,10 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	private boolean equipped;
 	private int[] color = {0, 0, 0};
 	private boolean victory = false;
+	
+	// Item info
+	private String itemName;
+	private ArrayList<Integer> itemStats;
 	
 	// CPU info
 	private int AIhp, AIspCount = 0;
@@ -62,6 +70,9 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		datasource = new DinosDataSource(this);
 		datasource.open();
 		
+		inventoryDatasource = new InventoryDataSource(this);
+		inventoryDatasource.open();
+		
 		// Store the dinos in list
 		dinoItems = datasource.getAllDinos();
 		
@@ -80,13 +91,26 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		level = dino.getmLevel();
 		experience = dino.getmExperience();
 		stats = new ArrayList<Integer>();
+		itemStats = new ArrayList<Integer>();
 		try {
-			convertBytes(dino.getmStats());
+			convertBytes(dino.getmStats(), stats);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if(dino.getmEquip() == -1)
+		Log.d(GeofenceUtils.APPTAG, "dino equip = " + dino.getmEquip());
+		if(dino.getmEquip() > 0) { 
+			equipped = true;
+			equippedItem = inventoryDatasource.getItemById(dino.getmEquip());
+			itemName = equippedItem.getName();
+			try {
+				convertBytes(equippedItem.getStatEffects(), itemStats);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
 			equipped = false;
+		}
 		setStats();
 		updateText();
 		drawDinoBitmap();
@@ -123,7 +147,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				hp = 0;
 				lose();
 			}
-		} else if(aiMove == 0) {
+		} else if(aiMove == 0) { // AI performs attack
 			Toast.makeText(this, "Attack", Toast.LENGTH_SHORT).show();
 			int aiDmg = attack - (int)Math.floor((double)(defense/2));
 			int playerDmg = attack - (int)Math.floor((double)(defense/2));
@@ -140,7 +164,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				hp = 0;
 				lose();
 			}
-		} else if(aiMove == 1) {
+		} else if(aiMove == 1) { // AI blocks
 			Toast.makeText(this, "Block", Toast.LENGTH_SHORT).show();
 			int playerDmg = attack - defense;
 			if(playerDmg <= 0)
@@ -357,13 +381,13 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	}
 	
 	// Converts byte arrays for latitudes and longitudes to array lists
-	public void convertBytes(byte[] bytStats) throws IOException {
+	public void convertBytes(byte[] bytStats, ArrayList<Integer> arrStats) throws IOException {
 
 		if (bytStats != null) {
 			ByteArrayInputStream bin = new ByteArrayInputStream(bytStats);
 			DataInputStream din = new DataInputStream(bin);
 			for (int i = 0; i < bytStats.length; i++) {
-				stats.add(Integer.valueOf(din.readInt()));
+				arrStats.add(Integer.valueOf(din.readInt()));
 			}
 		}
 
@@ -371,14 +395,25 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	
 	// Initialize stats and mechanics
 	private void setStats() {
-		hp = 10 + (level * 5);
-		AIhp = hp;
-		attack = stats.get(0);
-		defense = stats.get(1);
-		special = stats.get(2);
-		spMax = (level * 2) - special;
-		if(spMax <= 0)
-			spMax = 1;
+		if(equipped) {
+			hp = 10 + (level * 5);
+			AIhp = hp;
+			attack = stats.get(0) + itemStats.get(0);
+			defense = stats.get(1) + itemStats.get(1);
+			special = stats.get(2) + itemStats.get(2);
+			spMax = (level * 2) - special;
+			if(spMax <= 0)
+				spMax = 1;
+		} else {
+			hp = 10 + (level * 5);
+			AIhp = hp;
+			attack = stats.get(0);
+			defense = stats.get(1);
+			special = stats.get(2);
+			spMax = (level * 2) - special;
+			if(spMax <= 0)
+				spMax = 1;
+		}
 	}
 	
 	// Update text views with stats
