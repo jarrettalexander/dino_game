@@ -101,7 +101,7 @@ public class ItemActivity extends Activity {
 	public void equipItem(View v) {
 		
 		// Update equipment for current dino
-		currentDino.setmEquip(item.getId());
+		currentDino.setmEquip(item.getId().intValue());
 		dinoDatasource.updateDinoEquip(currentDino);
 		
 		// Return to current dino's character screen
@@ -190,8 +190,8 @@ public class ItemActivity extends Activity {
         bmp.setHasAlpha(true);
 
         // Recolor item based on greyscale image
-//        for(int j = 0; j < bmp.getHeight(); j++) {
-//        	for(int i = 0; i < bmp.getWidth(); i++) {
+        for(int j = 0; j < bmp.getHeight(); j++) {
+        	for(int i = 0; i < bmp.getWidth(); i++) {
 //        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
 //        			bmp.setPixel(i, j, item.getColorMain());
 //        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
@@ -201,8 +201,11 @@ public class ItemActivity extends Activity {
 //        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
 //        			bmp.setPixel(i, j, Color.TRANSPARENT);
 //        		}
-//        	 }
-//        }
+        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+        			bmp.setPixel(i, j, Color.TRANSPARENT);
+        		}
+        	 }
+        }
         
         // Scale bitmap to appropriate size
         bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() * 12, bmp.getHeight() * 12, false);
