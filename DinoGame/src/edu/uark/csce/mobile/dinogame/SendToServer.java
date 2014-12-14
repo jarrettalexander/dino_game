@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -268,6 +269,12 @@ import android.widget.TextView;
 						int def = d.getInt(TAG_ITEM_DEF);
 						int spc = d.getInt(TAG_ITEM_SPC);
 						
+						
+						/////////////////temp
+						int color1 = Color.argb(255, 204, 204, 37);
+						int color2 = Color.argb(255, 204, 37, 59);
+						int color3 = Color.argb(255, 204, 204, 37);
+						//////////////////
 						//create inventory item from values
 						//create byte array for stats
 						int[] stats = {att,def,spc};
@@ -275,9 +282,11 @@ import android.widget.TextView;
 				        IntBuffer intBuffer = byteBuffer.asIntBuffer();
 				        intBuffer.put(stats);
 				        byte[] array = byteBuffer.array();
+				        
+				        byte[] data = Base64.decode(img_string, Base64.DEFAULT);
 				        byte[] imgByteArray = img_string.getBytes(Charset.forName("UTF-8"));
 
-						InventoryItem item = new InventoryItem(item_id, name, array, imgByteArray, color_main, acc1, acc2);
+						InventoryItem item = new InventoryItem(item_id, name, array, data, color1, color2, color3);
 						invitems.add(item);
 					}
 				}
