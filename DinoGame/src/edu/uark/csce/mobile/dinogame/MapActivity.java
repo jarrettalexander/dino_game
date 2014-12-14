@@ -180,7 +180,8 @@ public class MapActivity extends FragmentActivity
 		PreferencesActivity prefs = new PreferencesActivity(this);
 		SendToServer t = new SendToServer(this, prefs.getId());
 		t.execute("SyncGeofenceLocations");
-		
+		//activity restarted after sync
+		finish();
 	}
 	
 	public void goBack(View v){
