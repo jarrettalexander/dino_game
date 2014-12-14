@@ -156,7 +156,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     
     // Retrieve the items associated from the triggered Geofences from the server
     private void getItemsByLocation(String[] location_ids){
-    	
+    	//userid from stored prefs
     	PreferencesActivity prefs = new PreferencesActivity(getApplicationContext());
     	if (serverCon == null){
     		serverCon = new SendToServer(getApplicationContext(), prefs.getId());

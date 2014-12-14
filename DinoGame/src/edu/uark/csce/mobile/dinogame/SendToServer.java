@@ -33,24 +33,24 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
-	/**
-	 * Background Async Task to Load all product by making HTTP Request
-	 * */
 	public class SendToServer extends AsyncTask<String, String, String> implements Runnable{
 
 		private static Context context;
-		private SummaryActivity activity1;
+		//geofence array list to gather from server
 		public ArrayList<SimpleGeofence> geofences;
 		public SimpleGeofenceStore mGeofenceStore;
+		//list of dinoitems received from server
 		public ArrayList<DinoItem> dinoitems;
+		//dialog on preexec
 		public ProgressDialog pDialog;
 		public InventoryDataSource invDataSource;
+		//list of inv items
 		public ArrayList<InventoryItem> invitems;
+		//bitmap string rec from server
 		public String bmpString;
+		//function making server call
 		public String function;
 		private static String user_id;
-		private TextView mapSyncLabel;
 		private Activity activity;
 		// Creating JSON Parser object
 		JSONParser jParser = new JSONParser();
@@ -86,26 +86,31 @@ import android.widget.TextView;
 			JSONArray items = null;
 			
 		public SendToServer(Context con, String id){
-			Log.d("sendtoserver", "creating new sendtoserver obj");
+			//Log.d("sendtoserver", "creating new sendtoserver obj");
+			//context and activity set in order to update labels
 			if (context == null){
 				context = con;
 			}
 			activity = (Activity) context;
-			//this.activity1 = act;
+			//init arra lists
 			geofences = new ArrayList<SimpleGeofence>();
 			mGeofenceStore = new SimpleGeofenceStore(con);
 			dinoitems = new ArrayList<DinoItem>();
 			invDataSource = new InventoryDataSource(con);
 			invitems = new ArrayList<InventoryItem>();
+			//set userid to send to server on location visit update
 			if (user_id == null){
 				user_id = id;
 			}
+			
+			//temp function for getting id from preference activity
 			//getIdFromPreference();
 		}
 		public JSONObject URLRequest(String url, String action, List<NameValuePair> params){
 			return jParser.makeHttpRequest(url, action, params);
 		}
 
+		//not needed if user id is passed as paramter
 		public void getIdFromPreference(){
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 			user_id = preferences.getString("android_id", "");
@@ -113,6 +118,7 @@ import android.widget.TextView;
 		public String getBmp(){
 			return bmpString;
 		}
+		// on post exec add list of inv items to local db
 		public void addItemsToDB(){
 			if (invitems.size() < 1){
 				return;
@@ -122,12 +128,13 @@ import android.widget.TextView;
 				try{
 				invDataSource.insertInventoryItem(i);
 				}catch(Exception e){
-					Log.d("adding item to local", "item " + i.getName() + " exists");
+					//Log.d("adding item to local", "item " + i.getName() + " exists");
 				}
 			}
 			invDataSource.close();
 			invitems.clear();
 		}
+		//on post exec add list of locs to local db
 		public void addLocationsToDB(){
 			if (geofences.size() < 1){
 				return;
@@ -146,10 +153,12 @@ import android.widget.TextView;
 			mGeofenceStore.close();
 			geofences.clear();
 		}
+		//locations encoded in json format
 		public String GetGeofenceLocations(){
 				
 			// Building Parameters
 						List<NameValuePair> params = new ArrayList<NameValuePair>();
+						//user id as param so locations already visited are not sent
 						params.add(new BasicNameValuePair("user", user_id));
 						/////////////////////////////////////////
 						//params can add in currently stored locations and send to server to filter these locations
@@ -159,26 +168,25 @@ import android.widget.TextView;
 						JSONObject json = URLRequest(
 								ServerUtil.URL_ALL_LOCATIONS, "POST", params);
 
-						// Check your log cat for JSON response
-						Log.d("All Locations: ", json.toString());
+						// Check log for locations recvd
+						//Log.d("All Locations: ", json.toString());
 
 						try {
 							// Checking for SUCCESS TAG
 							int success = json.getInt(TAG_SUCCESS);
 							
 							if (success == 1) {
-								// products found
-								// Getting Array of Products
+								// log locs
 								locations = json.getJSONArray(TAG_LOCATIONS);
-								Log.d("background", "got locations");
+								//Log.d("background", "got locations");
+								//format exp date on geofence
 								SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 								
-								// looping through All Products
-								Log.d("loop", "looping...");
+								//parse each location
 								for (int i = 0; i < locations.length(); i++) {
 									JSONObject c = locations.getJSONObject(i);
-									Log.d("object " + i, c.toString());
-									// Storing each json item in variable
+									//Log.d("location " + i, c.toString());
+									//id from remote db is identical to id in local db
 									double lon = Double.valueOf(c.getString(TAG_LONG));
 									double lat = Double.valueOf(c.getString(TAG_LAT));
 									String lid = c.getString(TAG_ID);
@@ -187,15 +195,15 @@ import android.widget.TextView;
 									try {
 										exp_date = format.parse(c.getString(TAG_EXP));
 									} catch (ParseException e) {
-										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
+									//transition not currently used
+									//set in mapactivity
 									int trn = Integer.valueOf(c.getString(TAG_TRAN));
 									int itm = Integer.valueOf(c.getString(TAG_ITEM));
 									long exp = exp_date.getTime();
 									boolean cmp = false;
-									// creating new fenc object
-									
+									//create fence
 									SimpleGeofence fence = new SimpleGeofence(lid, lat, lon, rad, exp, 1 | 2, itm, cmp);
 
 									// adding fence to ArrayList
@@ -209,20 +217,21 @@ import android.widget.TextView;
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						Log.d("doinback", String.valueOf(geofences.size()));
+						//Log.d("doinback", String.valueOf(geofences.size()));
 						return "success";
 		}
 		
+		//on geofence enter update loc as visited on remote server
 		public void updateLocationsVisited(String loc){
 			List<NameValuePair> param = new ArrayList<NameValuePair>();
 			param.add(new BasicNameValuePair("user", user_id));
 			//loc is comma delimited
 			param.add(new BasicNameValuePair("location", loc));
-			Log.d("updating location visited", loc);
+			//Log.d("updating location visited", loc);
 			JSONObject json = URLRequest(ServerUtil.URL_UPDATE_LOC_VIS, "POST", param);
 			try{
 				int success = json.getInt(TAG_SUCCESS);
-				Log.d("updatelocations success", json.toString());
+				//Log.d("updatelocations success", json.toString());
 
 				if (success == 1){
 					//update location complete local db
@@ -230,7 +239,7 @@ import android.widget.TextView;
 					List<String> locs = Arrays.asList(loc.split("\\s*,\\s*"));
 					for (String location : locs){
 						mGeofenceStore.setLocationToCompleted(location);
-						Log.d("marking as completed", "location " + location);
+						//Log.d("marking as completed", "location " + location);
 					}
 					mGeofenceStore.close();
 				}
@@ -238,9 +247,11 @@ import android.widget.TextView;
 				e.printStackTrace();
 			}
 		}
+		//on geofence enter send location id to remote and recv item data
 		public String GetItemsByLocation(String param1){
 			String result = "";
 			//param1 is comma delimited list of location ids
+			//allows for entering multiple locations
 			List<NameValuePair> param_list = new ArrayList<NameValuePair>();
 			param_list.add(new BasicNameValuePair("locations", param1));
 			Log.d("getting items at location", param1);
@@ -282,7 +293,7 @@ import android.widget.TextView;
 				        IntBuffer intBuffer = byteBuffer.asIntBuffer();
 				        intBuffer.put(stats);
 				        byte[] array = byteBuffer.array();
-				        
+				        //bitmap string recv from server and converted to byte array
 				        byte[] data = Base64.decode(img_string, Base64.DEFAULT);
 				        byte[] imgByteArray = img_string.getBytes(Charset.forName("UTF-8"));
 
@@ -293,33 +304,34 @@ import android.widget.TextView;
 			}catch (JSONException e){
 				e.printStackTrace();
 			}
-			//for each dinoitem object, add to local db
 			return result;
 		}
-		/**
-		 * Before starting background thread Show Progress Dialog
-		 * */
+		
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			Log.d("preex", "start");
-			/*pDialog = new ProgressDialog(context);
-			pDialog.setMessage("Loading item locations. Please wait...");
-			pDialog.setIndeterminate(false);
-			pDialog.setCancelable(false);
-			pDialog.show();*/
+			//Log.d("preex", "start");
+			try{
+				pDialog = new ProgressDialog(context);
+				pDialog.setMessage("Loading data from server. Please wait...");
+				pDialog.setIndeterminate(false);
+				pDialog.setCancelable(false);
+				pDialog.show();
+			}catch (Exception e){
+				e.printStackTrace();
+				//context not set
+			}
+
 			
 		}
 
-		/**
-		 * getting All products from url
-		 * */
 		protected String doInBackground(String... args) {
-			Log.d("getgeofencelocations", "start");
+			//Log.d("getgeofencelocations", "start");
 			String result = "";
+			//first arg is func making server request
 			function = args[0];
 			
-			
+			//second arg contains location id entered/exited
 			switch(args[0]) {
 			case "GetGeofenceLocations":
 				result = GetGeofenceLocations();
@@ -335,29 +347,22 @@ import android.widget.TextView;
 			return result;
 		}
 
-		/**
-		 * After completing background task Dismiss the progress dialog
-		 * **/
 		protected void onPostExecute(String file_url) {
-			Log.d("post","start");
-			// dismiss the dialog after getting all products
-			//pDialog.dismiss();
+			//Log.d("post","start");
+			try{
+				pDialog.dismiss();
+			}catch(Exception e){
+				e.printStackTrace();
+				//context not set or pdialog not init
+			}
+			
 			switch (function){
 			case "GetGeofenceLocations":
 				//update local database
 				addLocationsToDB();
-			
-				
-				
-				//mapSyncLabel = (TextView)activity.findViewById(R.id.GeofenceTestLabel);
-				//DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-				
-				//mapSyncLabel.setText("Geofences last synced: " +  format.format(new Date()));
-				//activity.setContentView(R.layout.activity_summary);
 				break;
 			case "GetItemsByLocation":
 				//add items to local db
-				//this.activity1.set(bmpString);
 				addItemsToDB();
 				break;
 			case "SyncGeofenceLocations":
@@ -366,10 +371,8 @@ import android.widget.TextView;
 				activity.startActivity(intent);
 				break;
 			}
-			Log.d("sum act", "setting tmp");
-			//this.activity1.set(bmpString);
-			//t.setText(String.valueOf(geofences.size()));
-			Log.d("post", "returning");
+			//Log.d("sum act", "setting tmp");
+			//Log.d("post", "returning");
 		}
 		@Override
 		public void run() {

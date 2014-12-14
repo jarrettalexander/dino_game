@@ -13,6 +13,7 @@ public class PreferencesActivity extends PreferenceActivity{
 	
 	public String android_id;
 	private Context context;
+	//used as userid for remote server purposes
 	private static final String PREF_ID = "android_id";
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -25,7 +26,7 @@ public class PreferencesActivity extends PreferenceActivity{
 		//set android_id
 		this.android_id = Secure.getString(con.getContentResolver(),Secure.ANDROID_ID);
 	}
-	
+	//updates security id/userid generated in summary act
 	public void UpdateSecurityId(){
 		//sets unique identifier
 		Log.d("prefs", "getting");
