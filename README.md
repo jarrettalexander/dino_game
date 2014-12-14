@@ -30,6 +30,15 @@ Within the LocationProvider project, in the LocationUtils.java file, the WAYPOIN
 
 To use the LocationProvider app, install it on the Android device with the DinoGame. Start the MockLocations app, and set the delay for enough time for you to switch applications. Set the send interval and click "Run once" to broadcast the locations specified in the LocationUtils.java. Exit the MockLocations app and launch the DinoGame app, clicking "Find Item" to begin seeing the mock location data.
 
+Known Issues
+------------
+
+Background music persists after exiting application, however this does not affect app performance.
+
+Item notifications may not take user to inventory screen on some devices.
+
+App crashes when attempting to decode item image from byte array stored in local database. For now, a placeholder image packaged with the app is used.
+
 Contributors
 ------------
 
