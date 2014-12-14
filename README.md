@@ -15,7 +15,7 @@ Clone the dino_game repo.
 Open as New Android Project From Existing Code in Eclipse
 Update the Android Maps API Key in the AndroidManifest.xml file to include a key for edu.uark.csce.mobile.dinogame.
 
-	Instructions for setting up an API key are [here](https://developers.google.com/maps/documentation/android/intro)
+Instructions for setting up an API key are [here](https://developers.google.com/maps/documentation/android/intro)
 
 Under the DinoGame Properties -> Anrdroid tab, add appcompat_v7 and google-play-services-lib libraries if they are not already present.
 
