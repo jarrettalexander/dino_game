@@ -27,10 +27,9 @@ import android.widget.Toast;
 
 public class BattleActivity extends Activity implements BattleDialogFragment.BattleDialogListener {
 	
-	// Database
+	// Database for dino and item data
 	private DinosDataSource datasource;
 	List<DinoItem> dinoItems;
-	
 	private InventoryDataSource inventoryDatasource;
 	private InventoryItem equippedItem;
 	
@@ -72,6 +71,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_battle);
 		
+		// Initialize data sources
 		datasource = new DinosDataSource(this);
 		datasource.open();
 		
@@ -87,7 +87,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		SPText = (TextView)findViewById(R.id.playerSP);
 		aiSPText = (TextView)findViewById(R.id.aiSP);
 		
-		move = new Random();
+		move = new Random();	//Random generator for AI moves and stat increases
 
 		// Retrieve dino info
 		Intent intent = getIntent();
@@ -116,7 +116,10 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		} else {
 			equipped = false;
 		}
+		
+		// Victory/Defeat rewards
 		setStats();
+		// Initialize battle screen
 		updateText();
 		drawDinoBitmap();
 		drawItemBitmap();
@@ -199,7 +202,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				victory();
 			}
 		}
-		updateText();
+		updateText(); // Refresh stats
 	}
 	
 	public void block(View v) throws IOException {
@@ -230,7 +233,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				hp = 0;
 				lose();
 			}
-		} else if(aiMove == 0) {
+		} else if(aiMove == 0) { // AI attacks
 			Toast.makeText(this, "Attack", Toast.LENGTH_SHORT).show();
 			int aiDmg = attack - defense;
 			if(aiDmg <= 0)
@@ -246,11 +249,11 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				hp = 0;
 				lose();
 			}
-		} else if(aiMove == 1) {
+		} else if(aiMove == 1) { // AI blocks too
 			Toast.makeText(this, "Block", Toast.LENGTH_SHORT).show();
 			// do nothing because both blocked
 		}
-		updateText();
+		updateText(); // Refresh stats
 	}
 	
 	public void special(View v) throws IOException {
@@ -290,7 +293,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				} else if(dead == true) {
 					lose();
 				}
-			} else if(aiMove == 0) {
+			} else if(aiMove == 0) { // AI attacks
 				Toast.makeText(this, "Attack", Toast.LENGTH_SHORT).show();
 				int aiDmg = attack - (int)Math.floor((double)(defense/2));
 				int playerDmg = attack*2 - (int)Math.floor((double)(defense/2));
@@ -313,7 +316,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 				} else if(dead == true) {
 					lose();
 				}
-			} else if(aiMove == 1) {
+			} else if(aiMove == 1) { // AI blocks
 				Toast.makeText(this, "Block", Toast.LENGTH_SHORT).show();
 				int playerDmg = attack*2 - defense;
 				if(playerDmg <= 0)
@@ -330,13 +333,14 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 					victory();
 				}
 			}
-			updateText();
+			updateText(); // Refresh stats
 		} else {
 			Toast.makeText(this, "Special not charged, try blocking", Toast.LENGTH_SHORT).show();
 		}
 	}
 	
 	public void forfeit(View v) {
+		// If player quits battle, return to character screen
 		Intent intent = new Intent(BattleActivity.this, CharacterActivity.class);
 		intent.putExtra(EXTRA_POSITION, position);
 		startActivity(intent);
@@ -359,6 +363,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		
 		// Reward dino for victory
 		newExp += 50;
+		// If dino levels up, upgrade stats
 		if(newExp >= 100) {
 			newLev++;
 			newExp = newExp - 100;
@@ -392,15 +397,16 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		newStats[1] = stats.get(1);
 		newStats[2] = stats.get(2);
 
-		// Reward dino for victory
+		// Reward dino even though it lost
 		newExp += 20;
+		// If dino levels up, upgrade stats
 		if(newExp >= 100) {
 			newLev++;
 			newExp = newExp - 100;
 			lvlUp = true;
 		}
-
 		datasource.setDinoExp(String.valueOf(dino.getmID()), newLev, newExp, convertIntArray(newStats));
+		
 		// Create an instance of the dialog fragment and show it
 		DialogFragment dialog = new BattleDialogFragment();
 		Bundle args = new Bundle();
@@ -410,7 +416,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		dialog.show(getFragmentManager(), "NoticeDialogFragment");
 	}
 	
-	// Converts byte arrays for latitudes and longitudes to array lists
+	// Converts byte arrays for stats to array lists
 	public void convertBytes(byte[] bytStats, ArrayList<Integer> arrStats) throws IOException {
 
 		if (bytStats != null) {
@@ -425,6 +431,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	
 	// Initialize stats and mechanics
 	private void setStats() {
+		// Add item stats if equipped
 		if(equipped) {
 			hp = 10 + (level * 5);
 			AIhp = hp;
@@ -580,14 +587,14 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	    // Scale bitmap to appropriate size
 	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * 12, bp.getHeight() * 12, false);
 	    aiDino.setImageBitmap(bp);
+	    // Now flip the image to face proper direction
 	    Bitmap bitmap = ((BitmapDrawable)aiDino.getDrawable()).getBitmap();
     	Matrix matrix = new Matrix();
     	matrix.preScale(-1.0f, 1.0f);
-//    	aiDino.setImageBitmap(Bitmap.createBitmap(bp, 0, 0, bp.getWidth(), bp.getHeight(), matrix, true));
     	aiDino.setImageBitmap(Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true));
     }
     
-    // Byte array conversion
+    // Conversion of stats to byte array
     public static byte[] convertIntArray(int[] intArr) throws IOException {
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
     	DataOutputStream dos = new DataOutputStream(baos);
@@ -601,10 +608,11 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    // defined by the BattleDialogFragment.BattleDialogListener interface
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
     	// User touched the dialog's positive button
+    	// Return to the character screen
     	Intent intent = new Intent(BattleActivity.this, CharacterActivity.class);		
     	intent.putExtra(EXTRA_POSITION, position);
     	startActivity(intent);

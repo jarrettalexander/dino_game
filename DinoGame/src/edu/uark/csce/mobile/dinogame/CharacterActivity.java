@@ -31,6 +31,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CharacterActivity extends Activity implements DeleteDinoDialogFragment.DeleteDinoDialogListener {
 	
@@ -182,6 +183,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    Bitmap bp = dinoPic.getDrawingCache();
 		ContentResolver c = getContentResolver();
 		picUrl = insertImage(c, bp, title, description);
+		Toast.makeText(this, "Dino Pic Saved!", Toast.LENGTH_SHORT).show();
 	}
 	
 	// Converts byte arrays for dino and item stats to array lists

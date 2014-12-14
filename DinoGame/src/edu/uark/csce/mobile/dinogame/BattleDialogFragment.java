@@ -46,6 +46,7 @@ public class BattleDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
+    	// Adjust dialog elements based on win and level up
     	boolean lvlUp = getArguments().getBoolean("lvl");
     	boolean win = getArguments().getBoolean("win");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
