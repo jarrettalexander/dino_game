@@ -1,6 +1,8 @@
 package edu.uark.csce.mobile.dinogame;
 
 import java.util.Date;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -118,6 +121,8 @@ public class SummaryActivity extends ActionBarActivity {
 			// Ignore expceptions - it's just music
 		}
 		
+		//addTestItem();
+		
 	}
 
 	public boolean timeToSync(){
@@ -212,5 +217,24 @@ public class SummaryActivity extends ActionBarActivity {
 	    	}
 	        return null;
 	    }
-}
+	}
+	
+	public void addTestItem() {
+				
+		int[] stats = {3,3,3};
+		ByteBuffer byteBuffer = ByteBuffer.allocate(stats.length * 4);        
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        intBuffer.put(stats);
+        byte[] array = byteBuffer.array();
+		byte[] imgBytes = {};
+		int color1 = Color.argb(255, 204, 204, 37);
+		int color2 = Color.argb(255, 204, 37, 59);
+		int color3 = Color.argb(255, 204, 204, 37);
+		InventoryItem testItem = new InventoryItem(9876l, "SuperHat", array, imgBytes, color1, color2, color3);
+		
+		InventoryDataSource ds = new InventoryDataSource(this);
+		ds.open();
+		ds.insertInventoryItem(testItem);
+		ds.close();
+	}
 }

@@ -67,7 +67,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private ImageView dinoPic;
 	
 	// Image scale
-	private static final int bitmapScale = 12; 
+	private static final int BITMAP_SCALE = 12; 
 	private Bitmap unscaledDinoBitmap;
 	
 	// Used for extras to pass in dino's position to other activities
@@ -102,6 +102,8 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		// Get equipped item
 		Log.d(GeofenceUtils.APPTAG, "dino equip = " + dino.getmEquip());
 		if(dino.getmEquip() > 0) { 
 			equipped = true;
@@ -223,14 +225,6 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
     // Draws a dino character on screen from a bitmap
     private void drawDinoBitmap() {
     	
-    	// Get color from dino object
-//    	if(dino.getmColor() == 1)
-//			color[0] = 204;
-//		else if(dino.getmColor() == 2)
-//			color[1] = 255;
-//		else if(dino.getmColor() == 3)
-//			color[2] = 255;
-    	
     	// Handle resizing options to prevent blurring
     	Options options = new BitmapFactory.Options();
         options.inScaled = false;
@@ -240,7 +234,7 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
 		bp.setHasAlpha(true);
 		
-		// Recolor dino based on greyscale image
+		// Recolor dino based on pre-processed image
 	    for(int j = 0; j < bp.getHeight(); j++) {
 	    	for(int i = 0; i < bp.getWidth(); i++) {
 	    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
@@ -258,28 +252,14 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    unscaledDinoBitmap = bp;
 	    
 	    // Scale bitmap to appropriate size
-	    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bp, bp.getWidth() * bitmapScale, bp.getHeight() * bitmapScale, false);
+	    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bp, bp.getWidth() * BITMAP_SCALE, bp.getHeight() * BITMAP_SCALE, false);
     		  
 	    // Set ImageView to dino bitmap
 	    dinoPic = (ImageView)findViewById(R.id.dinosaur);
 	    dinoPic.setImageBitmap(scaledBitmap);
-	    
-	    // Unused alpha stuff
-	    /*bp.setPixel(0, 0, Color.rgb(195, 195, 195));
-	    int color1 = bp.getPixel(10, 10);
-	    int color2 = Color.argb(255, 255, 255, 255);
-	    int color3 = bp.getPixel(11, 10);
-	    int alpha1 = Color.red(color1);
-	    int alpha2 = Color.red(color2);
-	    int alpha3 = Color.red(color3);
-	    Log.e("alpha values", "alpha1 = " + alpha1 + ", alpha2 = " + alpha2 + ", alpha3 = " + alpha3);
-	    if(color1 == color2) {
-	    	Log.e("pixel test", "It's a match!!!"); }
-	    if(color1 == color3) {
-	    	Log.e("color test", "Matches itself!!!");
-	    }*/
     }
     
+    // Draws the dino's equipped item onto the dino bitmap
     private void drawItemBitmap() {
     	// Handle resizing options to prevent blurring
     	Options options = new BitmapFactory.Options();
@@ -292,18 +272,16 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		
 		if(dino.getmEquip() > 0) {
 			Log.d(GeofenceUtils.APPTAG, "this dino has something equipped");
-			// Recolor item based on greyscale image
+			
+			// Recolor item based on pre-processed image
 		    for(int j = 0; j < bp.getHeight(); j++) {
 		    	for(int i = 0; i < bp.getWidth(); i++) {
 		    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
-		    			//bp.setPixel(i, j, dino.getColorMain());
-		    			bp.setPixel(i, j, Color.argb(255, 0, 17, 23));
+		    			bp.setPixel(i, j, equippedItem.getColorMain());
 		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
-		    			//bp.setPixel(i, j, dino.getColorAccent1());
-		    			bp.setPixel(i, j, Color.argb(255, 0, 17, 23));
+		    			bp.setPixel(i, j, equippedItem.getColorAccent1());
 		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
-		    			//bp.setPixel(i, j, dino.getColorAccent2());
-		    			bp.setPixel(i, j, Color.argb(255, 0, 17, 23));
+		    			bp.setPixel(i, j, equippedItem.getColorAccent2());
 		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
 		    			bp.setPixel(i, j, Color.TRANSPARENT);
 		    		}
@@ -326,12 +304,8 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 			}
 		}
 		
-//		int[] pixels = {};
-//		bp.getPixels(pixels, 0, bp.getWidth(), 0, 0, bp.getWidth(), bp.getHeight());
-//		unscaledDinoBitmap.setPixels(pixels, 0, 12, 12, 0, bp.getWidth(), bp.getHeight());
-	    
 	    // Scale bitmap to appropriate size
-	    Bitmap scaledDinoBitmap = Bitmap.createScaledBitmap(unscaledDinoBitmap, unscaledDinoBitmap.getWidth() * bitmapScale, unscaledDinoBitmap.getHeight() * bitmapScale, false);
+	    Bitmap scaledDinoBitmap = Bitmap.createScaledBitmap(unscaledDinoBitmap, unscaledDinoBitmap.getWidth() * BITMAP_SCALE, unscaledDinoBitmap.getHeight() * BITMAP_SCALE, false);
     		  
 	    // Set ImageView to item bitmap
 	    dinoPic = (ImageView)findViewById(R.id.dinosaur);

@@ -146,6 +146,8 @@ public class ItemActivity extends Activity {
         bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
         bmp.setHasAlpha(true);
 
+        Log.d(GeofenceUtils.APPTAG, "colors are: " + item.getColorMain() + ", " + item.getColorAccent1() + ", " + item.getColorAccent2());
+        
         // Recolor item based on pre-processed image
         for(int j = 0; j < bmp.getHeight(); j++) {
         	for(int i = 0; i < bmp.getWidth(); i++) {
@@ -182,22 +184,21 @@ public class ItemActivity extends Activity {
         bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
         bmp.setHasAlpha(true);
 
+        Log.d(GeofenceUtils.APPTAG, "colors are: " + item.getColorMain() + ", " + item.getColorAccent1() + ", " + item.getColorAccent2());
+        
         // Recolor item based on pre-processed image
         for(int j = 0; j < bmp.getHeight(); j++) {
         	for(int i = 0; i < bmp.getWidth(); i++) {
-//        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
-//        			bmp.setPixel(i, j, item.getColorMain());
-//        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
-//        			bmp.setPixel(i, j, item.getColorAccent1());
-//        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
-//        			bmp.setPixel(i, j, item.getColorAccent2());
-//        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
-//        			bmp.setPixel(i, j, Color.TRANSPARENT);
-//        		}
-        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
+        			bmp.setPixel(i, j, item.getColorMain());
+        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
+        			bmp.setPixel(i, j, item.getColorAccent1());
+        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
+        			bmp.setPixel(i, j, item.getColorAccent2());
+        		} else if(bmp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
         			bmp.setPixel(i, j, Color.TRANSPARENT);
         		}
-        	 }
+        	}
         }
         
         // Scale bitmap to appropriate size
