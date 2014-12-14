@@ -22,7 +22,7 @@ import android.widget.TextView;
 public class ItemActivity extends Activity {
 	
 	// Database
-	private InventoryDataSource itemDatasource;
+	private InventoryDataSource inventoryDatasource;
 	List<InventoryItem> invItems;
 	
 	private DinosDataSource dinoDatasource;
@@ -49,19 +49,20 @@ public class ItemActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item);
 		
-		itemDatasource = new InventoryDataSource(this);
-		itemDatasource.open();
+		// Open datasources
+		inventoryDatasource = new InventoryDataSource(this);
+		inventoryDatasource.open();
 		
 		dinoDatasource = new DinosDataSource(this);
 		dinoDatasource.open();
 		
-		// Store the items in list
-		invItems = itemDatasource.getAllItems();
+		// Store the items from local database into list
+		invItems = inventoryDatasource.getAllItems();
 		
-		// Read dinos from local database
+		// Store the dinos from local database into list
 		dinoItems = dinoDatasource.getAllDinos();
 		
-		// Retrieve dino info
+		// Get the currently activated the dino character
 		Intent intent = getIntent();
 		dinoPosition = intent.getIntExtra(CharacterActivity.EXTRA_DINO_POSITION, -1);
 		if(dinoPosition >= 0) {
@@ -71,7 +72,7 @@ public class ItemActivity extends Activity {
 			equipButton.setEnabled(false);
 		}
 		
-		// Retrieve item info
+		// Get the item the user selected from InventoryActivity
 		itemPosition = intent.getIntExtra(InventoryActivity.EXTRA_POSITION, 0);
 		item = invItems.get(itemPosition);
 		
@@ -82,7 +83,8 @@ public class ItemActivity extends Activity {
 			e.printStackTrace();
 		}
 		itemPic = (ImageView) findViewById(R.id.imageView1);
-		//TODO: Not working currently!
+		
+		//TODO: Bitmap decoding is currently not working correctly; Use placeholder instead for now
 		//bytesToBitmap(item.getIcon());
 		drawPlaceholderItemBitmap();
 		
@@ -129,25 +131,13 @@ public class ItemActivity extends Activity {
 
 	}
 	
-	// Converts byte array for icon to bitmap
+	// Converts byte array for icon to bitmap; Currently not working
 	public void bytesToBitmap(byte[] data) {
 		// Handle resizing options to prevent blurring
     	Options options = new BitmapFactory.Options();
         options.inScaled = false;
         
         Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-		
-		/*var documentsFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-
-	    //Create a folder for the images if not exists
-	    System.IO.Directory.CreateDirectory(System.IO.Path.Combine (documentsFolder, "images"));
-
-	    string imatge = System.IO.Path.Combine (documents, "images", "image.jpg");
-
-
-	    System.out..WriteAllBytes(imatge, bytes.Concat(new Byte[]{(byte)0xD9}).ToArray());
-
-	    bitmap = BitmapFactory.DecodeFile(imatge);*/
 		
         Log.e("debugging", "data: " + data);
         Log.e("debugging", "bitmap: " + bmp);
@@ -156,7 +146,7 @@ public class ItemActivity extends Activity {
         bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
         bmp.setHasAlpha(true);
 
-        // Recolor item based on greyscale image
+        // Recolor item based on pre-processed image
         for(int j = 0; j < bmp.getHeight(); j++) {
         	for(int i = 0; i < bmp.getWidth(); i++) {
         		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
@@ -174,23 +164,25 @@ public class ItemActivity extends Activity {
         // Scale bitmap to appropriate size
         bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() * 12, bmp.getHeight() * 12, false);
         
+        // Set ImageView to item bitmap
 		itemPic.setImageBitmap(bmp);
 	}
 	
+	// Used to draw a placeholder item bitmap while bytesToBitmap method is broken
 	private void drawPlaceholderItemBitmap() {
+		
 		// Handle resizing options to prevent blurring
     	Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
+        // Use pre-packaged item bitmap
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hat_top_hat, options);
-		
-        Log.e("debugging", "bitmap: " + bmp);
         
         // Create a mutable copy of the bitmap
         bmp = bmp.copy(Bitmap.Config.ARGB_8888, true);
         bmp.setHasAlpha(true);
 
-        // Recolor item based on greyscale image
+        // Recolor item based on pre-processed image
         for(int j = 0; j < bmp.getHeight(); j++) {
         	for(int i = 0; i < bmp.getWidth(); i++) {
 //        		if(bmp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
@@ -211,6 +203,7 @@ public class ItemActivity extends Activity {
         // Scale bitmap to appropriate size
         bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() * 12, bmp.getHeight() * 12, false);
         
+        // Set ImageView to item bitmap
 		itemPic.setImageBitmap(bmp);
 	}
 

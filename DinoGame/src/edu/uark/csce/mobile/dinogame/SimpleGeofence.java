@@ -2,7 +2,14 @@ package edu.uark.csce.mobile.dinogame;
 
 import com.google.android.gms.location.Geofence;
 
-// Holds a single Geofence object
+/**
+ * This class holds a representation of a single Geofence object, including info on whether the
+ * user has "completed" the Geofence, and the ID of the item reward associated with this particular
+ * Geofence.
+ * 
+ * @author Jarrett Alexander, with lots of help from Android Documentation and Android Sample Projects
+ *
+ */
 public class SimpleGeofence {
 
 	private final String mId;
@@ -11,8 +18,8 @@ public class SimpleGeofence {
 	private final float mRadius;
 	private long mExpirationDuration;
 	private int mTransitionType;
-	private long mItemId;
-	private boolean mCompleted;
+	private long mItemId;		// Item associated with this Geofence
+	private boolean mCompleted; // Whether the user has activated this Geofence yet
 	
 	/**
      * @param geofenceId The Geofence's request ID

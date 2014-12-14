@@ -56,35 +56,42 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * MapActivity allows the user to retrieve items based off of their real-world location.
+ * 
+ * On activity start, retrieves locations from local database and sets Geofences based off of their data.
+ * Display map with currently active Geofences and user's location. When user enters a Geofence, start
+ * process of retrieving the item associated with that location from the server.
+ * See RetrieveTransitionIntentService for background processing of Geofence transitions.
+ * 
+ * @author Jarrett Alexander, with lots of help from Android Documentation and Android Sample Projects
+ *
+ */
 public class MapActivity extends FragmentActivity 
 		implements com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks, 
 		OnConnectionFailedListener, 
 		OnAddGeofencesResultListener
 		{
 	
-	/*TODO: create local variables for: current geofence, current itemReward
-	 * structure storage of geofence data, expiration data ((expiration date from database - current date) in ms), and RewardItem data together
-	 * add event handlers for entering currentGeofence that launches dialog saying "Congrats! etc" and adding item to current storage of items
-	 * structure getting of current geofence from database on startup and activating it
-	 */
-	
 	private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     private static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * DateUtils.HOUR_IN_MILLIS;
     
-    private SimpleGeofence mCurrentGeofence;
-    private ArrayList<SimpleGeofence> mSimpleGeofenceList;
-    private List<Geofence> mGeofenceList;
+    // Datasource of local location data
     private SimpleGeofenceStore mGeofenceStorage;
     
-    // decimal formats for latitude, longitude, and radius
+    // List of internal Geofence object representations, and list of Android Geofence objects
+    private ArrayList<SimpleGeofence> mSimpleGeofenceList;
+    private List<Geofence> mGeofenceList;
+    
+    // Decimal formats for latitude, longitude, and radius
     private DecimalFormat mLatLngFormat;
     private DecimalFormat mRadiusFormat;
 	
     // Holds the location client
     private LocationClient mLocationClient;
     
-    // Stores the PendingIntent used to request geofence monitoring
+    // Stores the PendingIntent used to request Geofence monitoring
     private PendingIntent mGeofenceRequestIntent;
     
     //Defines the allowable request types
@@ -94,16 +101,14 @@ public class MapActivity extends FragmentActivity
     // Flag that indicates if request is underway
     private boolean mInProgress;
     
-    private GeofenceSampleReceiver mBroadcastReceiver;
+    // Broadcast receiver for Geofence transitions and associated filter
+    private GeofenceReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;
     
-    // Placeholder for reward
-    private String reward = "new hat";
+    // Textview to display last-synced info
+    private TextView syncLabel;
     
-    // Textview to display stuff
-    private TextView testLabel;
-    
-    // Google Map to display geofence
+    // Google Map to display active Geofences and user location
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private static final LocationRequest REQUEST = LocationRequest.create()
@@ -129,44 +134,46 @@ public class MapActivity extends FragmentActivity
         mRadiusFormat = new DecimalFormat(radiusPattern);
         mRadiusFormat.applyLocalizedPattern(mRadiusFormat.toLocalizedPattern());
 		
-		// Instantiate a new geofence storage area
+		// Instantiate a new Geofence datasource
 		mGeofenceStorage = new SimpleGeofenceStore(this);
 		mGeofenceStorage.open();
 		
         // Create a new broadcast receiver to receive updates from the listeners and service
-        mBroadcastReceiver = new GeofenceSampleReceiver();
+        mBroadcastReceiver = new GeofenceReceiver();
         mIntentFilter = new IntentFilter();
-        // Action for broadcast Intents that report successful addition of geofences
+        
+        // Action for broadcast Intents that report successful addition of Geofences
         mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCES_ADDED);
 
-        // Action for broadcast Intents that report successful removal of geofences
+        // Action for broadcast Intents that report successful removal of Geofences
         mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCES_REMOVED);
         
-        // Action for broadcast Intents that report geofence transitions
+        // Action for broadcast Intents that report Geofence transitions
         mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCE_TRANSITION);
 
-        // Action for broadcast Intents containing various types of geofencing errors
+        // Action for broadcast Intents containing various types of Geofencing errors
         mIntentFilter.addAction(GeofenceUtils.ACTION_GEOFENCE_ERROR);
 
         // All Location Services sample apps use this category
         mIntentFilter.addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES);
 		
-		// Instantiate a new list of geofences
+		// Instantiate a new list of Geofences
 		mGeofenceList = new ArrayList<Geofence>();
 		
-		testLabel = (TextView) findViewById(R.id.GeofenceTestLabel);
-		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+		syncLabel = (TextView) findViewById(R.id.GeofenceTestLabel);
 		
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();		
 		mMap.setMyLocationEnabled(true);
-
-		// Testing
-		//addTestGeofence();
 	}
+	
+	// Shows the last time the Geofences were synced with the server
 	public void updateSyncLabel(){
 
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		testLabel.setText("Geofences last synced: " + format.format(new Date()));
+		syncLabel.setText("Geofences last synced: " + format.format(new Date()));
 	}
+	
+	// Sync locations with the server
 	public void syncLocations(View v){
 		
 		updateSyncLabel();
@@ -175,13 +182,16 @@ public class MapActivity extends FragmentActivity
 		t.execute("SyncGeofenceLocations");
 		
 	}
+	
 	public void goBack(View v){
 		finish();
 	}
+	
 	public void goToSummary(View v){
 		Intent intent = new Intent(MapActivity.this, SummaryActivity.class);
 		startActivity(intent);
 	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -190,7 +200,7 @@ public class MapActivity extends FragmentActivity
 		Log.d(GeofenceUtils.APPTAG, "in onResume");
 		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, mIntentFilter);
 		
-		loadCurrentGeofence();
+		loadCurrentGeofences();
 	}
 	
 	@Override
@@ -202,16 +212,11 @@ public class MapActivity extends FragmentActivity
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -286,11 +291,9 @@ public class MapActivity extends FragmentActivity
 	
 	private PendingIntent getTransitionPendingIntent() {
         // Create an explicit Intent
-        Intent intent = new Intent(this,
-                ReceiveTransitionsIntentService.class);
-        /*
-         * Return the PendingIntent
-         */
+        Intent intent = new Intent(this, ReceiveTransitionsIntentService.class);
+        
+        // Return the PendingIntent
         return PendingIntent.getService(
                 this,
                 0,
@@ -304,7 +307,7 @@ public class MapActivity extends FragmentActivity
 		String msg;
 		
 		if(LocationStatusCodes.SUCCESS == statusCode) {
-			// Create a message containing all the geofence IDs added.
+			// Create a message containing all the Geofence IDs added.
             msg = this.getString(R.string.add_geofences_result_success,
                     Arrays.toString(geofenceRequestIds));
 
@@ -316,7 +319,7 @@ public class MapActivity extends FragmentActivity
                            .addCategory(GeofenceUtils.CATEGORY_LOCATION_SERVICES)
                            .putExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS, msg);
 			
-			// TODO: update UI for geofence successfully added
+			// Update UI for geofence successfully added
             updateSyncLabel();
 			updateMap();
 		} else {
@@ -343,7 +346,6 @@ public class MapActivity extends FragmentActivity
 		LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
 		
 		mInProgress = false;
-		//mLocationClient.disconnect();
 	}
 	
 	@Override
@@ -380,7 +382,7 @@ public class MapActivity extends FragmentActivity
 				// Get the PendingIntent for the request
 				mGeofenceRequestIntent = getTransitionPendingIntent();
 				
-				// Send a request to add the current geofence
+				// Send a request to add the current Geofence
 				mLocationClient.addGeofences(mGeofenceList, mGeofenceRequestIntent, this);
 		}
 	}
@@ -391,7 +393,7 @@ public class MapActivity extends FragmentActivity
 		mLocationClient = null;
 	}
 	
-	public void addGeofence() {
+	public void addGeofences() {
 		mRequestType = REQUEST_TYPE.ADD;
 		
 		// Test for Google Play Services after setting the request type.
@@ -408,15 +410,14 @@ public class MapActivity extends FragmentActivity
 			mLocationClient.connect();
 		} else {
 			Log.d(GeofenceUtils.APPTAG, "Request already underway.");
-			// TODO: disconnect client, reset flag, retry request
 		}
 	}	
 	
 	/**
      * Define a Broadcast receiver that receives updates from connection listeners and
-     * the geofence transition service.
+     * the Geofence transition service.
      */
-    public class GeofenceSampleReceiver extends BroadcastReceiver {
+    public class GeofenceReceiver extends BroadcastReceiver {
         /*
          * Define the required method for broadcast receivers
          * This method is invoked when a broadcast Intent triggers the receiver
@@ -429,12 +430,12 @@ public class MapActivity extends FragmentActivity
             
             Log.d(GeofenceUtils.APPTAG, "GeofenceSampleReceiver picked up something: " + action);
 
-            // Intent contains information about errors in adding or removing geofences
+            // Intent contains information about errors in adding or removing Geofences
             if (TextUtils.equals(action, GeofenceUtils.ACTION_GEOFENCE_ERROR)) {
 
                 handleGeofenceError(context, intent);
 
-            // Intent contains information about successful addition or removal of geofences
+            // Intent contains information about successful addition or removal of Geofences
             } else if (
                     TextUtils.equals(action, GeofenceUtils.ACTION_GEOFENCES_ADDED)
                     ||
@@ -442,7 +443,7 @@ public class MapActivity extends FragmentActivity
 
                 handleGeofenceStatus(context, intent);
 
-            // Intent contains information about a geofence transition
+            // Intent contains information about a Geofence transition
             } else if (TextUtils.equals(action, GeofenceUtils.ACTION_GEOFENCE_TRANSITION)) {
 
                 handleGeofenceTransition(context, intent);
@@ -450,7 +451,6 @@ public class MapActivity extends FragmentActivity
             // The Intent contained an invalid action
             } else {
                 Log.e(GeofenceUtils.APPTAG, getString(R.string.invalid_action_detail, action));
-                Toast.makeText(context, R.string.invalid_action, Toast.LENGTH_LONG).show();
             }
         }
 
@@ -461,82 +461,47 @@ public class MapActivity extends FragmentActivity
          */
         private void handleGeofenceStatus(Context context, Intent intent) {
         	Log.d(GeofenceUtils.APPTAG, "Geofence status: " + intent.getAction());
-        	Toast.makeText(context, "Geofence Status Changed", Toast.LENGTH_LONG).show();
         }
 
         /**
-         * Report geofence transitions to the UI
+         * Report Geofence transitions to the UI; Currently no UI update are performed
          *
          * @param context A Context for this component
          * @param intent The Intent containing the transition
          */
         private void handleGeofenceTransition(Context context, Intent intent) {
-        	//String msg = intent.getStringExtra("msg");
-        	
-            // TODO: UI change on transition
         	Log.d(GeofenceUtils.APPTAG, "Geofence transition occured: " + intent.getAction());
-        	//Log.d(GeofenceUtils.APPTAG, "msg: " + msg);
-        	Toast.makeText(context, "Geofence Transition Occured", Toast.LENGTH_LONG).show();
-        	
-        	//Update SharedPreferences
-        	//mGeofenceStorage.incrementLastGeofenceReceived(mCurrentGeofence.getId());
-        	
-        	// Update Database
-        	//mGeofenceStorage.setLocationToCompleted(mCurrentGeofence.getId());
         }
 
         /**
-         * Report addition or removal errors to the UI, using a Toast
+         * Report addition or removal errors to the log
          *
          * @param intent A broadcast Intent sent by ReceiveTransitionsIntentService
          */
         private void handleGeofenceError(Context context, Intent intent) {
             String msg = intent.getStringExtra(GeofenceUtils.EXTRA_GEOFENCE_STATUS);
             Log.e(GeofenceUtils.APPTAG, msg);
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         }
     }
     
-    private void loadCurrentGeofence() {
+    // Retrieve current Geofences and begin process of adding them and listening for transitions
+    private void loadCurrentGeofences() {
     	mGeofenceList.clear();
     	
-    	// Using SharedPreferences...
-    	//mCurrentGeofence = mGeofenceStorage.getCurrentGeofence();
-    	//mGeofenceList.add(mCurrentGeofence.toGeofence());
-    	
-    	// Using SQLite Database...
+    	// Retrieve all uncompleted Locations from local database
     	mSimpleGeofenceList = mGeofenceStorage.getAllUncompletedGeofences();
     	Log.d("count", String.valueOf(mSimpleGeofenceList.size()));
-    	/*if(mSimpleGeofenceList.get(0) != null) {
-    		mCurrentGeofence = mSimpleGeofenceList.get(0);
-    		mGeofenceList.add(mCurrentGeofence.toGeofence());
-    	}*/
+    	
     	for (SimpleGeofence fence : mSimpleGeofenceList){
     		mGeofenceList.add(fence.toGeofence());
     	}
     	
-    	addGeofence();
+    	addGeofences();
     }
     
+    // Keep map up to date with currently activated Geofences
     private void updateMap() {
     	
-    	/*if(mCurrentGeofence != null) {
-    		LatLng location = new LatLng(mCurrentGeofence.getLatitude(), mCurrentGeofence.getLongitude());
-    		mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-    		CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, 16);
-    		mMap.animateCamera(update);
-    		mMap.addMarker(new MarkerOptions().position(location).title("Geofence is here!"));
-    		
-    		// Add circle
-    		CircleOptions circleOptions = new CircleOptions()
-    			.center(location)
-    			.radius(mCurrentGeofence.getRadius())
-    			.fillColor(0x40ff0000)
-    			.strokeColor(Color.TRANSPARENT)
-    			.strokeWidth(2);
-    		
-    		Circle circle = mMap.addCircle(circleOptions);
-    	}*/
     	mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     	for (SimpleGeofence fence : mSimpleGeofenceList){
     		Log.d("adding geofence...", fence.toString());
@@ -546,7 +511,7 @@ public class MapActivity extends FragmentActivity
     		mMap.animateCamera(update);
     		mMap.addMarker(new MarkerOptions().position(location).title("Geofence is here! " + fence.getId()));
     		
-    		// Add circle
+    		// Add circle around each Geofence
     		CircleOptions circleOptions = new CircleOptions()
     			.center(location)
     			.radius(fence.getRadius())
@@ -557,75 +522,8 @@ public class MapActivity extends FragmentActivity
     		Circle circle = mMap.addCircle(circleOptions);
     	}
     }
-    
-//    private void setUpMapIfNeeded() {
-//        // Do a null check to confirm that we have not already instantiated the map.
-//        if (mMap == null) {
-//            // Try to obtain the map from the SupportMapFragment.
-//            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-//                    .getMap();
-//            // Check if we were successful in obtaining the map.
-//            if (mMap != null) {
-//                mMap.setMyLocationEnabled(true);
-//                //mMap.setOnMyLocationButtonClickListener(this);
-//            }
-//        }
-//    }
-//
-//    private void setUpGoogleApiClientIfNeeded() {
-//        if (mGoogleApiClient == null) {
-//            mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                    .addApi(LocationServices.API)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .build();
-//        }
-//    }
-//
-//	@Override
-//	public void onLocationChanged(Location location) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void onConnectionSuspended(int cause) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//    
-//    /**
-//     * Button to get current Location. This demonstrates how to get the current Location as required
-//     * without needing to register a LocationListener.
-//     */
-////    public void showMyLocation(View view) {
-////        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-////            String msg = "Location = "
-////                    + LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-////            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-////        }
-////    }
-    
-    public void drawUserMarker(Location location) {
-    	mMap.clear();
-    	
-    	updateMap();
-    	
-    	LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-    	mMap.addMarker(new MarkerOptions()
-    			.position(currentPosition)
-    			.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-    			.title("You are here"));
-    	
-    }
- 
-  //Method for testing purposes
-  private void addTestGeofence() {
-	  SimpleGeofence geo = new SimpleGeofence("123", 36.0742414, -94.2218162, 500f, GEOFENCE_EXPIRATION_IN_MILLISECONDS, Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT, 1234, false);  
-	  mGeofenceStorage.createGeofence(geo);
-  }
   
-  //Button listeners
+    //Button listeners
 	public void viewSummary(View v) {
 		Intent intent = new Intent(MapActivity.this, SummaryActivity.class);
 		startActivity(intent);
@@ -640,6 +538,12 @@ public class MapActivity extends FragmentActivity
 		Intent intent = new Intent(MapActivity.this, AccountActivity.class);
 		startActivity(intent);
 	}
+	 
+    //Method to add a Geofence for testing purposes
+    private void addTestGeofence() {
+    	SimpleGeofence geo = new SimpleGeofence("123", 36.0742414, -94.2218162, 500f, GEOFENCE_EXPIRATION_IN_MILLISECONDS, Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT, 1234, false);  
+    	mGeofenceStorage.createGeofence(geo);
+    }
 	
 	public void viewSettings(View v) {
 		Intent intent = new Intent(MapActivity.this, SettingsActivity.class);

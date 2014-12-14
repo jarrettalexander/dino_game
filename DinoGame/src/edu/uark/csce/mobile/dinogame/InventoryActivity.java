@@ -24,16 +24,18 @@ import android.widget.Toast;
 public class InventoryActivity extends Activity {
 	
 	// Item Database
-	private InventoryDataSource datasource;
+	private InventoryDataSource inventoryDatasource;
 	
 	// Geofence Database
-	private SimpleGeofenceStore geofenceStore;
+	private SimpleGeofenceStore geofenceDatasource;
 	
-	// Holds dino position
+	// Holds position of the dino character that activated the InventoryActivity
 	private int dinoPosition;
 	
+	// Used to send the position the user selected to the ItemActivity
 	public final static String EXTRA_POSITION = "this.POSITION";
 	
+	// Holds whether or not the activity was started from a notification
 	private boolean notificationMode;
 	
 	@Override
@@ -41,15 +43,18 @@ public class InventoryActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_inventory);
 		
-		datasource = new InventoryDataSource(this);
-		datasource.open();
+		// Get datasources
+		inventoryDatasource = new InventoryDataSource(this);
+		inventoryDatasource.open();
 		
-		geofenceStore = new SimpleGeofenceStore(this);
-		geofenceStore.open();
+		geofenceDatasource = new SimpleGeofenceStore(this);
+		geofenceDatasource.open();
 		
+		// Keep track of the currently selected dino character
 		Intent intent = getIntent();
 		dinoPosition = intent.getIntExtra(CharacterActivity.EXTRA_DINO_POSITION, -1);
 		
+		// On item click, pass index of currently selected dino and selected item to ItemActivity
 		ListView listview = (ListView) findViewById(R.id.itemList);
 		listview.setOnItemClickListener(new OnItemClickListener(){
 			@Override
@@ -83,7 +88,8 @@ public class InventoryActivity extends Activity {
 //		InventoryItem testItem = datasource.insertInventoryItem(new InventoryItem(12345, "hatter", testByteArray, testimagebyteArray, 0xFFFF0000, 0xFF00FF00, 0xFF0000FF));
 		// ... to here
 		
-		final List<InventoryItem> invItems = datasource.getAllItems();
+		// Get the inventory items from the Datasource to display
+		final List<InventoryItem> invItems = inventoryDatasource.getAllItems();
 		final ArrayAdapter<InventoryItem> workoutAdapter = new ArrayAdapter<InventoryItem>(this,
 				android.R.layout.simple_expandable_list_item_1, invItems);
 		listview.setAdapter(workoutAdapter);
@@ -103,13 +109,15 @@ public class InventoryActivity extends Activity {
 	    	
 	    	notificationMode = extras.getBoolean("from_notification", false);
 	    	
+	    	// Get Geofence that sent the notification
 	    	if(extras.getString("geofence_id") != null) {
 		        Log.d(GeofenceUtils.APPTAG, "Extra:" + extras.getString("geofence_id"));
 		        String geoId = extras.getString("geofence_id");
-		        SimpleGeofence geo = geofenceStore.getGeofenceById(geoId);
+		        SimpleGeofence geo = geofenceDatasource.getGeofenceById(geoId);
 		        
 		        Log.d(GeofenceUtils.APPTAG, "Geo with id " + geo.getId() + " has item " + geo.getItemId());
 		        
+		        // Find item associated with activated Geofence
 		        InventoryItem itemReceived = new InventoryItem();
 		        for(InventoryItem item : invItems) {
 		        	if(item.getId() == geo.getItemId()) {
@@ -119,6 +127,7 @@ public class InventoryActivity extends Activity {
 		        	}
 		        }
 		        
+		        // Show dialog informing user of newest item received
 		        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 		        dialogBuilder.setTitle("Received Item!")
 		        			.setMessage("Received Item: " + itemReceived.toString())
