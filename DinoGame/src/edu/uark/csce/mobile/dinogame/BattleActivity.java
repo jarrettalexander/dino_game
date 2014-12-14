@@ -362,8 +362,8 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 			newStats[2] += move.nextInt(2)+1;
 			lvlUp = true;
 		}
-		
 		datasource.setDinoExp(String.valueOf(dino.getmID()), newLev, newExp, convertIntArray(newStats));
+		
 		// Create an instance of the dialog fragment and show it
     	DialogFragment dialog = new BattleDialogFragment();
     	Bundle args = new Bundle();

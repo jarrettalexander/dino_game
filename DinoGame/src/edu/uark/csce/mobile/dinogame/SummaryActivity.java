@@ -38,25 +38,26 @@ import android.widget.Toast;
 
 public class SummaryActivity extends ActionBarActivity {
 	
-	// Database
+	// Database for dinos
 	private DinosDataSource datasource;
 	private static String tmp;
 	private static ImageView img;
+	// Geofence
 	public ArrayList<SimpleGeofence> geofences;
 	public SimpleGeofenceStore mGeofenceStore;
 	public ProgressDialog pDialog;
 	public PreferencesActivity prefs;
-	
+	// Background music object
 	private BackgroundSound music;
 	// Creating JSON Parser object
 	JSONParser jParser = new JSONParser();
 	public TextView t;
 	private static Date lastSync;
-	//server variable for sending
+	// Server variable for sending
 	private SendToServer serverCon;
-	// products JSONArray
-		JSONArray locations = null;
-	
+	// Products JSONArray
+	JSONArray locations = null;
+	// Extra to pass into activities for the dino's position in list
 	public final static String EXTRA_POSITION = "this.POSITION";
 
 	
@@ -67,15 +68,16 @@ public class SummaryActivity extends ActionBarActivity {
 		prefs = new PreferencesActivity(this);
 		prefs.UpdateSecurityId();
 		
-		
+		// Get source of dinos
 		datasource = new DinosDataSource(this);
 		datasource.open();
 		
+		// Populate list of dinos
 		ListView listview = (ListView) findViewById(R.id.listView1);
 		listview.setOnItemClickListener(new OnItemClickListener(){
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				
+				// When dino is tapped, open that dino's information
 				Intent intent = new Intent(SummaryActivity.this, CharacterActivity.class);
 				intent.putExtra(EXTRA_POSITION, position);
 				startActivity(intent);
@@ -88,7 +90,7 @@ public class SummaryActivity extends ActionBarActivity {
 				R.layout.dino_item, dinoItems);
 		listview.setAdapter(dinoItemAdapter);
 		
-		//create new array of geofence objects
+		// Create new array of geofence objects
 		geofences = new ArrayList<SimpleGeofence>();
 		mGeofenceStore = new SimpleGeofenceStore(this);
 		t = (TextView) findViewById(R.id.textView1);
@@ -113,13 +115,13 @@ public class SummaryActivity extends ActionBarActivity {
 			}		
 			music.execute();
 		} catch(Exception e){
-			//ignore expceptions - its just music
+			// Ignore expceptions - it's just music
 		}
 		
 	}
 
 	public boolean timeToSync(){
-		//sync every hour
+		// Sync every hour
 		boolean result = true;
 		if (lastSync == null){
 			lastSync = new Date();
@@ -156,21 +158,6 @@ public class SummaryActivity extends ActionBarActivity {
 	}
 	
 	// Button listeners
-	public void viewPlayer(View v) {
-		Intent intent = new Intent(SummaryActivity.this, CharacterActivity.class);
-		startActivity(intent);
-	}
-	
-	public void viewAccount(View v) {
-		Intent intent = new Intent(SummaryActivity.this, AccountActivity.class);
-		startActivity(intent);
-	}
-	
-	public void viewSettings(View v) {
-		Intent intent = new Intent(SummaryActivity.this, SettingsActivity.class);
-		startActivity(intent);
-	}
-	
 	public void viewMap(View v) {
 		Intent intent = new Intent(SummaryActivity.this, MapActivity.class);
 		startActivity(intent);
@@ -216,12 +203,12 @@ public class SummaryActivity extends ActionBarActivity {
 	    @Override
 	    protected Void doInBackground(Void... params) {
 	    	try{
-	        MediaPlayer player = MediaPlayer.create(SummaryActivity.this, R.raw.theme); 
-	        player.setLooping(true); // Set looping 
-	        player.setVolume(100,100); 
-	        player.start(); 
+	    		MediaPlayer player = MediaPlayer.create(SummaryActivity.this, R.raw.theme); 
+	    		player.setLooping(true); // Set looping 
+	    		player.setVolume(100,100); 
+	    		player.start(); 
 	    	} catch (Exception e){
-	    		//ignore
+	    		// Ignore
 	    	}
 	        return null;
 	    }

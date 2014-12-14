@@ -533,22 +533,12 @@ public class MapActivity extends FragmentActivity
 		Intent intent = new Intent(MapActivity.this, CharacterActivity.class);
 		startActivity(intent);
 	}
-	
-	public void viewAccount(View v) {
-		Intent intent = new Intent(MapActivity.this, AccountActivity.class);
-		startActivity(intent);
-	}
 	 
     //Method to add a Geofence for testing purposes
     private void addTestGeofence() {
     	SimpleGeofence geo = new SimpleGeofence("123", 36.0742414, -94.2218162, 500f, GEOFENCE_EXPIRATION_IN_MILLISECONDS, Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT, 1234, false);  
     	mGeofenceStorage.createGeofence(geo);
     }
-	
-	public void viewSettings(View v) {
-		Intent intent = new Intent(MapActivity.this, SettingsActivity.class);
-		startActivity(intent);
-	}
     
 }
 

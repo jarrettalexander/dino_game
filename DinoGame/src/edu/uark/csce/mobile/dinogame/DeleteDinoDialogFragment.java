@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 public class DeleteDinoDialogFragment extends DialogFragment {
 	
+	// Initialize Dialog text elements
 	private final String title = "Delete Dino";
 	private final String message = "Are you sure you want to do this? Your dinosaur will be released and never get to" +
 			" fight again...";
@@ -35,7 +36,7 @@ public class DeleteDinoDialogFragment extends DialogFragment {
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
-                    + " must implement NoticeDialogListener");
+                    + " must implement DeleteDinoDialogListener");
         }
     }
     

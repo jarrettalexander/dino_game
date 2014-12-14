@@ -2,21 +2,30 @@ package edu.uark.csce.mobile.dinogame;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.android.gms.maps.model.LatLng;
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,10 +34,9 @@ import android.widget.TextView;
 
 public class CharacterActivity extends Activity implements DeleteDinoDialogFragment.DeleteDinoDialogListener {
 	
-	// Database
+	// Database for dinos and items
 	private DinosDataSource datasource;
 	List<DinoItem> dinoItems;
-	
 	private InventoryDataSource inventoryDatasource;
 	private InventoryItem equippedItem;	
 	
@@ -44,7 +52,12 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private String itemName;
 	private ArrayList<Integer> itemStats;
 	
-	// Info Views
+	// Gallery pic info
+	private String title;
+	private String description;
+	private String picUrl;
+	
+	// Info Views to display dino's data
 	private TextView nameText;
 	private TextView attackText;
 	private TextView defenseText;
@@ -57,16 +70,16 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	private static final int bitmapScale = 12; 
 	private Bitmap unscaledDinoBitmap;
 	
-	// Used for extras
+	// Used for extras to pass in dino's position to other activities
 	public final static String EXTRA_DINO_POSITION = "this.DINO_POSITION";
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_character);
 		
+		// Initialize the dino and item data
 		datasource = new DinosDataSource(this);
 		datasource.open();
-		
 		inventoryDatasource = new InventoryDataSource(this);
 		inventoryDatasource.open();
 		
@@ -89,7 +102,6 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		Log.d(GeofenceUtils.APPTAG, "dino equip = " + dino.getmEquip());
 		if(dino.getmEquip() > 0) { 
 			equipped = true;
@@ -105,6 +117,9 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 			equipped = false;
 		}
 		
+		// Initialize pic information
+		title = dino.getmName();
+		description = "DinoGame character picture.";
 		
 		// Adjust Views based on data
 		nameText = (TextView)findViewById(R.id.textViewNoItems);
@@ -131,34 +146,43 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 		expBar = (ProgressBar)findViewById(R.id.expBar);
 		expBar.setProgress(dino.getmExperience());
 		
+		// Draw dino and item images to activity
 		drawDinoBitmap();
 		drawItemBitmap();
 		
 	}
 	
-	// Button listeners
+	/*---Button listeners---*/
+	// Called when cancel is pressed
 	public void viewSummary(View v) {
 		Intent intent = new Intent(CharacterActivity.this, SummaryActivity.class);
 		startActivity(intent);
 	}
-	
+	// Called when player enters battle with dino
 	public void enterBattle(View v) {
 		Intent intent = new Intent(CharacterActivity.this, BattleActivity.class);
 		intent.putExtra(EXTRA_DINO_POSITION, position);
 		startActivity(intent);
 	}
-	
+	// Called when player views inventory activity to pick item for dino
 	public void equipItem(View v) {
 		Intent intent = new Intent(CharacterActivity.this, InventoryActivity.class);
 		intent.putExtra(EXTRA_DINO_POSITION, position);
 		startActivity(intent);
 	}
-	
+	// Opens dialog box for player to verify they want to 'release' dino
 	public void deleteDino(View v) {
 		showDeleteDialog();
 	}
+	// Save picture of the dino to gallery
+	public void saveDinoPic(View v) {
+		dinoPic.setDrawingCacheEnabled(true);
+	    Bitmap bp = dinoPic.getDrawingCache();
+		ContentResolver c = getContentResolver();
+		picUrl = insertImage(c, bp, title, description);
+	}
 	
-	// Converts byte arrays for latitudes and longitudes to array lists
+	// Converts byte arrays for dino and item stats to array lists
 	public void convertBytes(byte[] bytStats, ArrayList<Integer> Stats) throws IOException {
 
 		if (bytStats != null) {
@@ -180,10 +204,11 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    // defined by the DeleteDinoDialogFragment.DeleteDinoDialogListener interface
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         // User touched the dialog's positive button
+    	// Delete dino and return to Summary
     	Intent intent = new Intent(CharacterActivity.this, SummaryActivity.class);		
     	datasource.deleteDino(dino);
 		startActivity(intent);
@@ -311,6 +336,101 @@ public class CharacterActivity extends Activity implements DeleteDinoDialogFragm
 	    // Set ImageView to item bitmap
 	    dinoPic = (ImageView)findViewById(R.id.dinosaur);
 	    dinoPic.setImageBitmap(scaledDinoBitmap);
+    }
+    
+    // This function is used to save the character picture to the device gallery
+    public static final String insertImage(ContentResolver cr, 
+			Bitmap source, 
+			String title, 
+			String description) {
+		
+		ContentValues values = new ContentValues();
+		values.put(Images.Media.TITLE, title);
+		values.put(Images.Media.DISPLAY_NAME, title);
+		values.put(Images.Media.DESCRIPTION, description);
+		values.put(Images.Media.MIME_TYPE, "image/jpeg");
+		// Add the date meta data to ensure the image is added at the front of the gallery
+		values.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
+		values.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
+ 
+        Uri url = null;
+        String stringUrl = null;    /* Value to be returned */
+ 
+        try {
+            url = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+ 
+            if (source != null) {
+                OutputStream imageOut = cr.openOutputStream(url);
+                try {
+                    source.compress(Bitmap.CompressFormat.JPEG, 50, imageOut);
+                } finally {
+                    imageOut.close();
+                }
+ 
+                long id = ContentUris.parseId(url);
+                // Wait until MINI_KIND thumbnail is generated.
+                Bitmap miniThumb = Images.Thumbnails.getThumbnail(cr, id, Images.Thumbnails.MINI_KIND, null);
+                // This is for backward compatibility.
+                storeThumbnail(cr, miniThumb, id, 50F, 50F,Images.Thumbnails.MICRO_KIND);
+            } else {
+                cr.delete(url, null, null);
+                url = null;
+            }
+        } catch (Exception e) {
+            if (url != null) {
+                cr.delete(url, null, null);
+                url = null;
+            }
+        }
+ 
+        if (url != null) {
+            stringUrl = url.toString();
+        }
+ 
+        return stringUrl;
+	}
+    
+    // Used with insertImage function to create the thumbnail metadata for inserting into gallery
+    private static final Bitmap storeThumbnail(
+    		ContentResolver cr,
+    		Bitmap source,
+    		long id,
+    		float width, 
+    		float height,
+    		int kind) {
+
+    	// Create the matrix to scale it
+    	Matrix matrix = new Matrix();
+
+    	float scaleX = width / source.getWidth();
+    	float scaleY = height / source.getHeight();
+
+    	matrix.setScale(scaleX, scaleY);
+
+    	Bitmap thumb = Bitmap.createBitmap(source, 0, 0,
+    			source.getWidth(),
+    			source.getHeight(), matrix,
+    			true
+    			);
+
+    	ContentValues values = new ContentValues(4);
+    	values.put(Images.Thumbnails.KIND,kind);
+    	values.put(Images.Thumbnails.IMAGE_ID,(int)id);
+    	values.put(Images.Thumbnails.HEIGHT,thumb.getHeight());
+    	values.put(Images.Thumbnails.WIDTH,thumb.getWidth());
+
+    	Uri url = cr.insert(Images.Thumbnails.EXTERNAL_CONTENT_URI, values);
+
+    	try {
+    		OutputStream thumbOut = cr.openOutputStream(url);
+    		thumb.compress(Bitmap.CompressFormat.JPEG, 100, thumbOut);
+    		thumbOut.close();
+    		return thumb;
+    	} catch (FileNotFoundException ex) {
+    		return null;
+    	} catch (IOException ex) {
+    		return null;
+    	}
     }
 
 }
