@@ -115,17 +115,17 @@ public class DinosDataSource {
 
 	private DinoItem cursorToDino(Cursor cursor) throws ParseException {
 		DinoItem dino = new DinoItem();
-		dino.setmID(cursor.getLong(0));
-		dino.setmName(cursor.getString(1));
-		dino.setmCreatedDate(cursor.getString(2));
-		dino.setmLevel(cursor.getInt(3));
-		dino.setmExperience(cursor.getInt(4));
-		dino.setmStats(cursor.getBlob(5));
-		dino.setColorMain(cursor.getInt(6));
-		dino.setColorAccent1(cursor.getInt(7));
-		dino.setColorAccent2(cursor.getInt(8));
+		dino.setmID(cursor.getLong(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ID)));
+		dino.setmName(cursor.getString(cursor.getColumnIndex(MySQLiteHelper.COLUMN_NAME)));
+		dino.setmCreatedDate(cursor.getString(cursor.getColumnIndex(MySQLiteHelper.COLUMN_DATE)));
+		dino.setmLevel(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_LEVEL)));
+		dino.setmExperience(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_EXP)));
+		dino.setmStats(cursor.getBlob(cursor.getColumnIndex(MySQLiteHelper.COLUMN_STATS)));
+		dino.setColorMain(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_COLOR_ONE)));
+		dino.setColorAccent1(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_COLOR_TWO)));
+		dino.setColorAccent2(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_COLOR_THREE)));
 		if(cursor.getInt(7) != -1) {
-			dino.setmEquip(cursor.getInt(9));
+			dino.setmEquip(cursor.getInt(cursor.getColumnIndex(MySQLiteHelper.COLUMN_EQUIP)));
 		}
 		return dino;
 	}

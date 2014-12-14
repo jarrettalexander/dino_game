@@ -150,14 +150,14 @@ public class SimpleGeofenceStore {
     // Convert cursor to SimpleGeofence object
  	private SimpleGeofence cursorToSimpleGeofence(Cursor cursor) {
  		
- 		String id = cursor.getString(0);
- 		double latitude = cursor.getDouble(1);
- 		double longitude = cursor.getDouble(2);
- 		float radius = cursor.getFloat(3);
- 		long duration = cursor.getLong(4);
- 		int transition = cursor.getInt(5);
- 		long item = cursor.getLong(6);
- 		boolean completed = cursor.getInt(7) > 0;
+ 		String id = cursor.getString(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_ID));
+ 		double latitude = cursor.getDouble(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_LATITUDE));
+ 		double longitude = cursor.getDouble(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_LONGITUDE));
+ 		float radius = cursor.getFloat(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_RADIUS));
+ 		long duration = cursor.getLong(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_DURATION));
+ 		int transition = cursor.getInt(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_TRANSITION_TYPE));
+ 		long item = cursor.getLong(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_ITEM_ID));
+ 		boolean completed = cursor.getInt(cursor.getColumnIndex(LocationSQLiteHelper.LOCATIONS_COLUMN_COMPLETED)) > 0;
  		
  		return new SimpleGeofence(id, latitude, longitude, radius, duration, transition, item, completed);
  	}
