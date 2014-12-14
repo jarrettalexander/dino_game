@@ -8,6 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.BitmapFactory.Options;
+import android.util.Log;
+
 public class DinoItem {
 	
 	private long mID;
@@ -136,6 +142,5 @@ public class DinoItem {
 
 	public void setmEquip(int mEquip) {
 		this.mEquip = mEquip;
-	}
-	
+	}	
 }

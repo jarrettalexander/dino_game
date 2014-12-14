@@ -53,6 +53,10 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	private int AIhp, AIspCount = 0;
 	private Random move;
 	
+	// Image scale
+	private static final int BITMAP_SCALE = 12; 
+	private Bitmap unscaledDinoBitmap;
+	
 	// Info views
 	private TextView HPText;
 	private TextView aiHPText;
@@ -115,6 +119,7 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		setStats();
 		updateText();
 		drawDinoBitmap();
+		drawItemBitmap();
 		drawAIDino();
 	}
 	
@@ -461,11 +466,10 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
 		bp.setHasAlpha(true);
 		
-		// Recolor dino based on greyscale image
+		// Recolor dino based on pre-processed image
 	    for(int j = 0; j < bp.getHeight(); j++) {
 	    	for(int i = 0; i < bp.getWidth(); i++) {
 	    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
-	    			//bp.setPixel(i, j, Color.argb(255, color[0], color[1], color[2]));
 	    			bp.setPixel(i, j, dino.getColorMain());
 	    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
 	    			bp.setPixel(i, j, dino.getColorAccent1());
@@ -477,27 +481,67 @@ public class BattleActivity extends Activity implements BattleDialogFragment.Bat
 	    	}
 	    }
 	    
+	    unscaledDinoBitmap = bp;
+	    
 	    // Scale bitmap to appropriate size
-	    bp = Bitmap.createScaledBitmap(bp, bp.getWidth() * 12, bp.getHeight() * 12, false);
+	    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bp, bp.getWidth() * BITMAP_SCALE, bp.getHeight() * BITMAP_SCALE, false);
     		  
 	    // Set ImageView to dino bitmap
 	    dinoPic = (ImageView)findViewById(R.id.playerDino);
-	    dinoPic.setImageBitmap(bp);
-	    
-	    // Unused alpha stuff
-	    /*bp.setPixel(0, 0, Color.rgb(195, 195, 195));
-	    int color1 = bp.getPixel(10, 10);
-	    int color2 = Color.argb(255, 255, 255, 255);
-	    int color3 = bp.getPixel(11, 10);
-	    int alpha1 = Color.red(color1);
-	    int alpha2 = Color.red(color2);
-	    int alpha3 = Color.red(color3);
-	    Log.e("alpha values", "alpha1 = " + alpha1 + ", alpha2 = " + alpha2 + ", alpha3 = " + alpha3);
-	    if(color1 == color2) {
-	    	Log.e("pixel test", "It's a match!!!"); }
-	    if(color1 == color3) {
-	    	Log.e("color test", "Matches itself!!!");
-	    }*/
+	    dinoPic.setImageBitmap(scaledBitmap);
+    }
+    
+    // Draws the equipped item on the dino
+    private void drawItemBitmap() {
+    	// Handle resizing options to prevent blurring
+    	Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bp = BitmapFactory.decodeResource(getResources(), R.drawable.hat_top_hat, options);
+    	
+    	// Create a mutable copy of the bitmap
+		bp = bp.copy(Bitmap.Config.ARGB_8888, true);
+		bp.setHasAlpha(true);
+		
+		if(dino.getmEquip() > 0) {
+			Log.d(GeofenceUtils.APPTAG, "this dino has something equipped");
+			
+			// Recolor item based on pre-processed image
+		    for(int j = 0; j < bp.getHeight(); j++) {
+		    	for(int i = 0; i < bp.getWidth(); i++) {
+		    		if(bp.getPixel(i, j) == ColorUtils.COLOR_MAIN) {
+		    			bp.setPixel(i, j, equippedItem.getColorMain());
+		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_1) {
+		    			bp.setPixel(i, j, equippedItem.getColorAccent1());
+		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_ACCENT_2) {
+		    			bp.setPixel(i, j, equippedItem.getColorAccent2());
+		    		} else if(bp.getPixel(i, j) == ColorUtils.COLOR_BACKGROUND) {
+		    			bp.setPixel(i, j, Color.TRANSPARENT);
+		    		}
+		    	}
+		    }
+		} else {
+			Log.d(GeofenceUtils.APPTAG, "this dino has nothing equipped");
+			for(int j = 0; j < bp.getHeight(); j++) {
+				for(int i = 0; i < bp.getWidth(); i++) {
+					bp.setPixel(i, j, Color.argb(0, 0, 0, 0));
+				}
+			}
+		}
+		
+		// Add item bitmap to dino bitmap
+		for(int j = 0; j < 11; j++) { // height
+			for(int i = 11; i < unscaledDinoBitmap.getWidth(); i++) { // width from pixel 11 to 22
+				if(bp.getPixel(i-11, j) != Color.TRANSPARENT)
+					unscaledDinoBitmap.setPixel(i, j, bp.getPixel(i-11, j));
+			}
+		}
+		
+	    // Scale bitmap to appropriate size
+	    Bitmap scaledDinoBitmap = Bitmap.createScaledBitmap(unscaledDinoBitmap, unscaledDinoBitmap.getWidth() * BITMAP_SCALE, unscaledDinoBitmap.getHeight() * BITMAP_SCALE, false);
+    		  
+	    // Set ImageView to item bitmap
+	    dinoPic = (ImageView)findViewById(R.id.playerDino);
+	    dinoPic.setImageBitmap(scaledDinoBitmap);
     }
     
     private void drawAIDino() {
